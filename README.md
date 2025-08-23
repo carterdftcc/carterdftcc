@@ -1,16 +1,18 @@
-## Hi there 👋
+# Hi, I'm Darryl Carter 👋
 
-<!--
-**carterdftcc/carterdftcc** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+## About Me
+Currently taking CSC-113 AI Fundamentals and learning to collaborate with AI tools!
 
-Here are some ideas to get you started:
+## My Foo 🎯
+I am trying to get underserved communities excited about STEM. Rather than spending time rotting on social media, I want them to leverage STEM as an investment in their future.
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+## Currently Learning
+- 🤖 AI collaboration and prompt engineering
+- 🐙 GitHub workflows and version control
+- 💡 Building my first AI assistants
+
+## Fun Fact
+I am learning 3D modeling in Tinkercad so I can create something interesting.
+
+## Find Me
+- 📫 Right here on GitHub!
