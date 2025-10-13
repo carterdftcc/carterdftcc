@@ -24,6 +24,7 @@ AmazoBot had more things to say that were not related to the actual question. Th
 - **After:** Received a similar answer but was told to rephrase the question.
 - **Verdict:** Not much better. At least, I was asked to rephrase the question.
 - **Screenshot:**
+- 
  https://github.com/carterdftcc/carterdftcc/blob/main/screenshot/test_case_2_before.png
  https://github.com/carterdftcc/carterdftcc/blob/main/screenshot/test_case_2_after.png
  
