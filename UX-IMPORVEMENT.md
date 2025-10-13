@@ -13,7 +13,7 @@ AmazoBot had more things to say that were not related to the actual question. Th
 - **After:** Amazobot was a little nicer but the terms were never defined.
 - **Verdict:** No real improvement.
 - **Screenshot:**
-- 
+  
  https://github.com/carterdftcc/carterdftcc/blob/main/screenshot/test_case_1_before.png
  https://github.com/carterdftcc/carterdftcc/blob/main/screenshot/test_case_1_after.png
  
