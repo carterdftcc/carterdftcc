@@ -12,8 +12,10 @@ AmazoBot had more things to say that were not related to the actual question. Th
 - **Before:** AmazoBot provided the terms but never defined them. The rest of the output was related to provide insults.
 - **After:** Amazobot was a little nicer but the terms were never defined.
 - **Verdict:** No real improvement.
-- **Screenshot:** 
- 
+- **Screenshot:**
+- 
+ https://github.com/carterdftcc/carterdftcc/blob/main/screenshot/test_case_1_before.png
+ https://github.com/carterdftcc/carterdftcc/blob/main/screenshot/test_case_1_after.png
  
 
 ### Test Case 2: What specific friction point ruins the experience?
@@ -21,7 +23,9 @@ AmazoBot had more things to say that were not related to the actual question. Th
 - **Before:** Asked for a comparison between two terms and was informed that the query was too vague.
 - **After:** Received a similar answer but was told to rephrase the question.
 - **Verdict:** Not much better. At least, I was asked to rephrase the question.
-- **Screenshot:** 
+- **Screenshot:**
+ https://github.com/carterdftcc/carterdftcc/blob/main/screenshot/test_case_2_before.png
+ https://github.com/carterdftcc/carterdftcc/blob/main/screenshot/test_case_2_after.png
  
  
 ### Test Case 3: What specific friction point ruins the experience?
@@ -30,7 +34,8 @@ AmazoBot had more things to say that were not related to the actual question. Th
 - **Verdict:** Just another version of the same, I will say Worse.
 - **Screenshot:**
  
- 
+https://github.com/carterdftcc/carterdftcc/blob/main/screenshot/test_case_3_before.png
+https://github.com/carterdftcc/carterdftcc/blob/main/screenshot/test_case_3_after.png
 
 ## Unintended Consequences
 [What new problems did your fix create? Be honest!]
