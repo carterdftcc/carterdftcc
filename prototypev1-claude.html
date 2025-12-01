@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security+ PrepBot</title>
+    <style>
+        /* ========================================
+           GLOBAL STYLES & RESET
+           ======================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* ========================================
+           MAIN CONTAINER
+           ======================================== */
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 800px;
+            height: 90vh;
+            max-height: 700px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ========================================
+           HEADER SECTION
+           ======================================== */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px;
+            text-align: center;
+            border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* ========================================
+           CHAT MESSAGES AREA
+           ======================================== */
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .message.bot {
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .message-content {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.bot .message-content {
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            border-bottom-left-radius: 4px;
+        }
+
+        .objective-tag {
+            display: inline-block;
+            background: #ffc107;
+            color: #333;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 8px 0;
+        }
+
+        .practice-items {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .practice-items strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #667eea;
+        }
+
+        .practice-items ul {
+            margin-left: 20px;
+        }
+
+        .practice-items li {
+            margin-bottom: 6px;
+            line-height: 1.5;
+        }
+
+        /* ========================================
+           INPUT AREA
+           ======================================== */
+        .input-area {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 12px;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 24px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-area input:focus {
+            border-color: #667eea;
+        }
+
+        .input-area button {
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .input-area button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .input-area button:active {
+            transform: translateY(0);
+        }
+
+        .input-area button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ========================================
+           LOADING INDICATOR
+           ======================================== */
+        .typing-indicator {
+            display: none;
+            padding: 12px 16px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            border-bottom-left-radius: 4px;
+            max-width: 75px;
+        }
+
+        .typing-indicator.active {
+            display: inline-block;
+        }
+
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+            margin: 0 2px;
+            animation: bounce 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        /* ========================================
+           RESPONSIVE DESIGN
+           ======================================== */
+        @media (max-width: 600px) {
+            .container {
+                height: 100vh;
+                max-height: 100vh;
+                border-radius: 0;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+
+            .input-area {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ========================================
+         MAIN APPLICATION CONTAINER
+         ======================================== -->
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <h1>🔒 Security+ PrepBot</h1>
+            <p>CompTIA Security+ (SY0-701) Exam Preparation Assistant</p>
+        </div>
+
+        <!-- Chat Messages Area -->
+        <div class="chat-area" id="chatArea">
+            <div class="message bot">
+                <div class="message-content">
+                    <strong>Welcome to Security+ PrepBot!</strong><br>
+                    Ask me any question about CompTIA Security+ (SY0-701) exam topics, and I'll provide quick answers with official objective references and practice recommendations.
+                </div>
+            </div>
+        </div>
+
+        <!-- User Input Area -->
+        <div class="input-area">
+            <input 
+                type="text" 
+                id="userInput" 
+                placeholder="Ask about Security+ topics (e.g., 'What is a zero-day vulnerability?')"
+                autocomplete="off"
+            >
+            <button id="sendBtn" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        /* ========================================
+           SECURITY+ KNOWLEDGE BASE
+           Mock database of Security+ topics mapped to objectives
+           ======================================== */
+        const securityKnowledge = {
+            'zero-day': {
+                objective: 'SY0-701 1.2',
+                answer: 'A zero-day vulnerability is a security flaw in software that is unknown to the vendor and has no available patch, making it particularly dangerous as attackers can exploit it before defenses exist.',
+                practices: [
+                    'Review threat intelligence sources and vulnerability disclosure processes',
+                    'Practice identifying zero-day indicators in security incident scenarios'
+                ]
+            },
+            'phishing': {
+                objective: 'SY0-701 2.2',
+                answer: 'Phishing is a social engineering attack where attackers use fraudulent communications (typically emails) to trick victims into revealing sensitive information or installing malware.',
+                practices: [
+                    'Study different phishing variants: spear phishing, whaling, vishing, and smishing',
+                    'Review email security controls and anti-phishing technologies'
+                ]
+            },
+            'encryption': {
+                objective: 'SY0-701 1.4',
+                answer: 'Encryption is the process of converting plaintext data into ciphertext using cryptographic algorithms, ensuring confidentiality by making data unreadable without the proper decryption key.',
+                practices: [
+                    'Compare symmetric vs asymmetric encryption algorithms and use cases',
+                    'Practice calculating encryption strength and understanding key management'
+                ]
+            },
+            'firewall': {
+                objective: 'SY0-701 3.3',
+                answer: 'A firewall is a network security device that monitors and controls incoming and outgoing traffic based on predetermined security rules, acting as a barrier between trusted and untrusted networks.',
+                practices: [
+                    'Review firewall types: packet-filtering, stateful, proxy, and next-generation',
+                    'Practice creating and analyzing firewall rule sets for different scenarios'
+                ]
+            },
+            'multi-factor authentication': {
+                objective: 'SY0-701 2.4',
+                answer: 'Multi-factor authentication (MFA) requires users to provide two or more verification factors from different categories (something you know, have, or are) to gain access, significantly enhancing security beyond passwords alone.',
+                practices: [
+                    'Study the five authentication factors and their security trade-offs',
+                    'Review MFA implementation methods: SMS, authenticator apps, hardware tokens, and biometrics'
+                ]
+            },
+            'vulnerability': {
+                objective: 'SY0-701 1.3',
+                answer: 'A vulnerability is a weakness in a system, application, or process that could be exploited by threats to gain unauthorized access or cause harm.',
+                practices: [
+                    'Study common vulnerability types from the CVE database and CVSS scoring',
+                    'Practice vulnerability assessment methodologies and remediation prioritization'
+                ]
+            },
+            'incident response': {
+                objective: 'SY0-701 4.8',
+                answer: 'Incident response is the systematic approach to managing security breaches or attacks, following phases: preparation, identification, containment, eradication, recovery, and lessons learned.',
+                practices: [
+                    'Memorize the six phases of the incident response lifecycle',
+                    'Review incident response team roles and documentation requirements'
+                ]
+            },
+            'public key infrastructure': {
+                objective: 'SY0-701 3.9',
+                answer: 'Public Key Infrastructure (PKI) is a framework that manages digital certificates and public-key encryption, enabling secure communications and authentication through certificate authorities and trust chains.',
+                practices: [
+                    'Study PKI components: CA, RA, CRL, and OCSP',
+                    'Practice certificate lifecycle management and trust validation'
+                ]
+            },
+            'malware': {
+                objective: 'SY0-701 2.1',
+                answer: 'Malware is malicious software designed to damage, disrupt, or gain unauthorized access to systems, including viruses, worms, trojans, ransomware, and spyware.',
+                practices: [
+                    'Compare different malware types and their propagation methods',
+                    'Review malware detection techniques and anti-malware tools'
+                ]
+            },
+            'access control': {
+                objective: 'SY0-701 4.6',
+                answer: 'Access control determines who can access resources in a computing environment through models like DAC, MAC, and RBAC, enforcing the principles of least privilege and separation of duties.',
+                practices: [
+                    'Study access control models and their appropriate use cases',
+                    'Practice implementing role-based access control (RBAC) scenarios'
+                ]
+            }
+        };
+
+        /* ========================================
+           CORE APPLICATION FUNCTIONS
+           ======================================== */
+        
+        const chatArea = document.getElementById('chatArea');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        // Allow Enter key to send messages
+        userInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        /**
+         * Main function to handle sending user messages
+         */
+        function sendMessage() {
+            const message = userInput.value.trim();
+            
+            if (message === '') return;
+
+            // Display user message
+            addMessage(message, 'user');
+            
+            // Clear input and disable button
+            userInput.value = '';
+            sendBtn.disabled = true;
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            // Simulate processing delay (realistic response time per NFR-4.1)
+            setTimeout(() => {
+                const response = generateResponse(message);
+                hideTypingIndicator();
+                addMessage(response, 'bot');
+                sendBtn.disabled = false;
+                userInput.focus();
+            }, 1500);
+        }
+
+        /**
+         * Adds a message to the chat area
+         */
+        function addMessage(content, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            
+            if (type === 'bot' && typeof content === 'object') {
+                // Bot response with structured content
+                contentDiv.innerHTML = content.html;
+            } else {
+                // User message or simple text
+                contentDiv.textContent = content;
+            }
+            
+            messageDiv.appendChild(contentDiv);
+            chatArea.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        /**
+         * Shows typing indicator while processing
+         */
+        function showTypingIndicator() {
+            const indicator = document.createElement('div');
+            indicator.className = 'message bot';
+            indicator.id = 'typingIndicator';
+            indicator.innerHTML = `
+                <div class="typing-indicator active">
+                    <span></span><span></span><span></span>
+                </div>
+            `;
+            chatArea.appendChild(indicator);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        /**
+         * Hides typing indicator
+         */
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        /**
+         * Generates bot response based on user query (FR-3.1 through FR-3.5)
+         */
+        function generateResponse(query) {
+            const lowerQuery = query.toLowerCase();
+            
+            // Search knowledge base for matching topics
+            for (const [key, data] of Object.entries(securityKnowledge)) {
+                if (lowerQuery.includes(key) || lowerQuery.includes(key.replace('-', ' '))) {
+                    // Found a match - return structured response (FR-3.2, FR-3.3, FR-3.4)
+                    return {
+                        html: `
+                            <div>
+                                <strong>Answer:</strong><br>
+                                ${data.answer}
+                            </div>
+                            <div class="objective-tag">📚 Objective: ${data.objective}</div>
+                            <div class="practice-items">
+                                <strong>Recommended Practice:</strong>
+                                <ul>
+                                    ${data.practices.map(p => `<li>${p}</li>`).join('')}
+                                </ul>
+                            </div>
+                        `
+                    };
+                }
+            }
+            
+            // No match found - handle out of scope query (FR-3.5)
+            return {
+                html: `
+                    <div>
+                        <strong>Topic Not Found</strong><br>
+                        I couldn't find specific information about "${query}" in the Security+ curriculum. Please try rephrasing your question or ask about topics like: encryption, firewalls, phishing, malware, access control, incident response, PKI, vulnerabilities, or MFA.
+                    </div>
+                `
+            };
+        }
+
+        // Focus input on load
+        window.onload = function() {
+            userInput.focus();
+        };
+    </script>
+</body>
+</html>
