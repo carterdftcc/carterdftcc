@@ -1,0 +1,439 @@
+Below is a single-file web application (HTML + embedded CSS + JavaScript) that implements the PrepBot PRD features you requested. It contains:
+
+* Chat-like UI, mobile-responsive.
+* Natural-language input handling (rule-based).
+* Concise answer generation (enforced 1–3 sentences).
+* Objective ID citation (uses an embedded map of common Security+ topics → SY0-701 objective IDs; editable inside the code).
+* 1–2 actionable practice items per answer.
+* Ambiguity / out-of-scope handling.
+* Clear inline comments explaining major sections and how to modify the objective map.
+
+Copy the entire content into a file named `prepbot.html` and open it in any modern browser.
+
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PrepBot — Security+ (SY0-701) Quick Chat</title>
+  <style>
+    /* ===========================
+       Basic reset & layout
+       =========================== */
+    :root{
+      --bg:#0f1724; /* dark navy */
+      --card:#0b1220;
+      --accent:#06b6d4;
+      --muted:#94a3b8;
+      --text:#e6eef6;
+      --bubble:#111827;
+      --bubble-user:#065f46;
+      --success:#16a34a;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#071226);color:var(--text)}
+    .app{
+      max-width:900px;
+      margin:24px auto;
+      padding:20px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:12px;
+      box-shadow:0 8px 30px rgba(2,6,23,0.6);
+    }
+
+    header{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:16px;
+    }
+    .logo{
+      width:56px;height:56px;border-radius:10px;
+      background:linear-gradient(135deg,var(--accent),#60a5fa);
+      display:flex;align-items:center;justify-content:center;font-weight:700;color:#022;
+      box-shadow:0 6px 18px rgba(6,182,212,0.12), inset 0 -6px 18px rgba(255,255,255,0.05);
+    }
+    h1{font-size:18px;margin:0}
+    p.lead{margin:0;color:var(--muted);font-size:13px}
+
+    /* Chat container */
+    .chat {
+      height:60vh;
+      min-height:360px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.006), rgba(255,255,255,0.004));
+      border-radius:10px;
+      padding:16px;
+      overflow:auto;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      border:1px solid rgba(255,255,255,0.02);
+    }
+
+    .msg {display:flex;gap:12px;align-items:flex-start}
+    .msg .avatar {
+      width:36px;height:36px;border-radius:8px;background:linear-gradient(180deg,#0f1724,#0b1220);
+      display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;border:1px solid rgba(255,255,255,0.02);
+    }
+    .bubble {
+      max-width:78%;
+      padding:10px 14px;border-radius:10px;color:var(--text);
+      background:linear-gradient(180deg,var(--bubble),#0b1220);
+      box-shadow:0 4px 14px rgba(2,6,23,0.6);
+      font-size:14px;
+      line-height:1.35;
+    }
+    .msg.user{flex-direction:row-reverse;gap:12px}
+    .msg.user .bubble{background:linear-gradient(180deg,var(--bubble-user),#064e3b);border:1px solid rgba(0,0,0,0.2)}
+    .meta{font-size:12px;color:var(--muted);margin-top:6px}
+
+    /* Controls */
+    .controls{
+      margin-top:12px;display:flex;gap:8px;align-items:center;
+    }
+    textarea.input{
+      flex:1;min-height:56px;max-height:140px;padding:12px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--text);resize:vertical;font-size:14px;
+    }
+    button.btn{
+      padding:12px 16px;border-radius:10px;border:0;background:var(--accent);color:#022;font-weight:600;cursor:pointer;
+      box-shadow:0 6px 18px rgba(6,182,212,0.12);
+    }
+    button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+    .small{font-size:13px;padding:8px 12px;border-radius:8px}
+
+    /* Footer / notes */
+    .note{font-size:13px;color:var(--muted);margin-top:12px}
+    .objective-badge{display:inline-block;background:rgba(255,255,255,0.03);padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,0.02);font-weight:600;color:var(--accent);margin-left:8px}
+
+    /* Responsive */
+    @media (max-width:640px){
+      .app{margin:10px;padding:12px}
+      .chat{height:56vh}
+      h1{font-size:16px}
+    }
+
+    /* small helper styles */
+    .practice{margin-top:8px;padding:8px;border-radius:8px;background:rgba(255,255,255,0.012);border:1px dashed rgba(255,255,255,0.02);font-size:13px}
+    .oos{color:#f97316;font-weight:600} /* out of scope */
+    .verify{color:var(--muted);font-size:12px;margin-top:6px}
+  </style>
+</head>
+<body>
+  <div class="app" role="application" aria-labelledby="title">
+    <header>
+      <div class="logo" aria-hidden="true">PB</div>
+      <div>
+        <h1 id="title">PrepBot — Security+ (SY0-701) Quick Chat</h1>
+        <p class="lead">Fast, concise Security+ answers with objective citations and practice items.</p>
+      </div>
+      <div style="margin-left:auto;text-align:right">
+        <div class="objective-badge" id="versionBadge">v1.0</div>
+        <div style="font-size:12px;color:var(--muted)">Local demo — no external requests</div>
+      </div>
+    </header>
+
+    <!-- Chat history area -->
+    <main class="chat" id="chat" aria-live="polite"></main>
+
+    <!-- Controls -->
+    <div class="controls" role="region" aria-label="Chat input">
+      <textarea id="userInput" class="input" placeholder="Ask a Security+ question (example: 'What's the difference between symmetric and asymmetric encryption?')" aria-label="Enter your question"></textarea>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn" id="sendBtn">Ask PrepBot</button>
+        <button class="ghost small" id="clearBtn" title="Clear chat">Clear</button>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Design note:</strong> PrepBot returns a concise 1–3 sentence answer, cites a mapped SY0-701 objective ID, and suggests 1–2 practice items. <span class="verify">Verify objective IDs against official CompTIA documentation if required.</span>
+    </div>
+  </div>
+
+  <script>
+    /*************************************************************
+     * PrepBot Single-File App (no external dependencies)
+     *
+     * Major Sections:
+     *  - OBJECTIVE_MAP: rule-based mapping of topic keywords -> objective IDs & canned snippets
+     *  - UI helpers: render messages, scrolling, concise text enforcement
+     *  - Query handling logic: parse user input, select best match, return answer + practice items
+     *
+     * IMPORTANT:
+     *  - This app is intentionally rule-based (no external LLM).
+     *  - The OBJECTIVE_MAP is editable and should be kept in-sync with official CompTIA SY0-701 objectives.
+     *  - The app enforces short responses (1-3 sentences) per PRD.
+     *************************************************************/
+
+    // -----------------------------
+    // OBJECTIVE_MAP
+    // -----------------------------
+    // A small, editable knowledge map that connects common Security+ topics to:
+    //  - objectiveId: the SY0-701 objective identifier (approximate; update as needed)
+    //  - snippet: a concise answer template (1-3 sentences)
+    //  - practices: 1-2 actionable practice items tied to the objective
+    //
+    // To extend: add new keyword keys or expand 'aliases' list.
+    const OBJECTIVE_MAP = [
+      {
+        id: "SY0-701 1.1",
+        keywords: ["phishing","social engineering","spearphishing","vishing","pretexting"],
+        title: "Social engineering / phishing",
+        snippet: "Phishing is a social-engineering attack that tricks users into revealing sensitive data or executing malicious actions; it commonly uses deceptive emails or messages. Train users to verify senders and use multi-factor authentication to reduce impact.",
+        practices: [
+          "Review three recent phishing email samples and identify red flags (sender address, links, attachments).",
+          "Set up a phishing simulation (or review past simulation reports) and document common failure patterns."
+        ]
+      },
+      {
+        id: "SY0-701 1.2",
+        keywords: ["malware","ransomware","trojan","worm","virus"],
+        title: "Malware types",
+        snippet: "Malware are malicious programs (ransomware, trojans, worms) designed to steal, disrupt, or encrypt data; detection combines signature and behavior-based tools. Always keep endpoint protection updated and perform regular backups to mitigate ransomware risk.",
+        practices: [
+          "Analyze an example ransomware case study and list the containment and recovery steps.",
+          "Practice using an endpoint detection tool or review sample logs to identify suspicious behavior."
+        ]
+      },
+      {
+        id: "SY0-701 2.3",
+        keywords: ["firewall","ids","ips","nacl","packet-filtering","stateful"],
+        title: "Network security controls",
+        snippet: "Firewalls filter traffic at network boundaries (packet-filtering, stateful, or next-gen), while IDS/IPS detect or block suspicious activity inside the network. Combine layered controls and strict traffic rules to limit attack surface.",
+        practices: [
+          "Review firewall rules on a lab device and document allow/deny rules for a web service.",
+          "Configure a basic IDS/IPS signature to detect suspicious traffic in a test environment."
+        ]
+      },
+      {
+        id: "SY0-701 3.4",
+        keywords: ["authentication","mfa","2fa","ssm","saml","oauth","oath","kerberos"],
+        title: "Authentication & federation",
+        snippet: "Authentication verifies identity (passwords, multifactor authentication, federation protocols like SAML/OAuth), and MFA significantly reduces account compromise risk. Use strong factors and federated SSO where appropriate to centralize control.",
+        practices: [
+          "Enable MFA for a test account and verify login flow and recovery options.",
+          "Compare SAML and OAuth by mapping which flows they each support (authorization vs authentication)."
+        ]
+      },
+      {
+        id: "SY0-701 2.4",
+        keywords: ["encryption","symmetric","asymmetric","aes","rsa","tls","cipher"],
+        title: "Encryption fundamentals",
+        snippet: "Symmetric encryption uses one shared key for encryption/decryption (fast, used for bulk data), while asymmetric uses public/private key pairs for secure key exchange and signatures. Use TLS for in-transit protection and strong ciphers for data at rest.",
+        practices: [
+          "Encrypt a small file with a symmetric tool (e.g., OpenSSL 'enc') and then verify decryption.",
+          "Inspect a TLS handshake with a packet capture and identify which cipher suite negotiates."
+        ]
+      },
+      {
+        id: "SY0-701 4.1",
+        keywords: ["incident response","ir","forensics","containment","eradication","recovery"],
+        title: "Incident response basics",
+        snippet: "Incident response follows preparation, detection, containment, eradication, recovery, and lessons-learned phases; having runbooks and logging is essential. Timely detection and proper evidence handling preserve forensic value.",
+        practices: [
+          "Draft a one-page incident response runbook for a ransomware event (contain, notify, recover).",
+          "Practice collecting forensic artifacts (memory, event logs) on a controlled test host."
+        ]
+      },
+      {
+        id: "SY0-701 5.1",
+        keywords: ["risk","governance","compliance","policy","gdpr","hipaa","nist","cis"],
+        title: "Governance, risk & compliance",
+        snippet: "Governance and risk management align security controls with business goals and compliance requirements (policies, risk assessments, frameworks like NIST). Conduct regular risk assessments and keep policies current.",
+        practices: [
+          "Perform a short risk assessment for a sample application, listing threats, likelihood, and controls.",
+          "Map one organizational policy to relevant regulatory requirements (e.g., data retention to HIPAA)."
+        ]
+      },
+      {
+        id: "SY0-701 3.3",
+        keywords: ["vpn","ipsec","ssl vpn","wireguard","tunnel"],
+        title: "VPN technologies",
+        snippet: "VPNs (IPsec, SSL/TLS, newer tools like WireGuard) create encrypted tunnels for remote access or site-to-site connectivity; select based on use case and performance needs. Always authenticate endpoints and limit access by policy.",
+        practices: [
+          "Configure an IPsec or WireGuard tunnel in a lab and verify traffic passes securely.",
+          "Document authentication and authorization controls used for an existing VPN."
+        ]
+      },
+      {
+        id: "SY0-701 3.1",
+        keywords: ["hardening","patch","configuration","baseline","os hardening","secure config"],
+        title: "System hardening & patching",
+        snippet: "Hardening reduces attack surface via baselines, patch management, and removing unnecessary services; consistent configurations reduce drift and vulnerabilities. Automate patching where possible and validate with configuration scans.",
+        practices: [
+          "Create a simple configuration baseline for a Linux server and check it with an automated tool.",
+          "Review recent CVEs for a key service and document patching steps and timeline."
+        ]
+      }
+      // Add more entries as needed...
+    ];
+
+    // -----------------------------
+    // Utility: normalize and score matches
+    // -----------------------------
+    function normalizeText(t){
+      return t.toLowerCase().replace(/[^a-z0-9\s\-]/g,' ').replace(/\s+/g,' ').trim();
+    }
+
+    // Return best match object with score or null
+    function findBestMatch(userText){
+      const norm = normalizeText(userText);
+      const tokens = norm.split(' ').filter(Boolean);
+      if(tokens.length === 0) return null;
+
+      let best = null;
+      for(const entry of OBJECTIVE_MAP){
+        let score = 0;
+        const kws = entry.keywords.map(k=>k.toLowerCase());
+        for(const kw of kws){
+          // if phrase present -> big boost
+          if(norm.includes(kw)) score += 5;
+        }
+        // +1 for each keyword token match
+        for(const t of tokens){
+          if(kws.includes(t)) score += 1;
+        }
+        // small boost if title words match
+        const titleTokens = normalizeText(entry.title).split(' ');
+        for(const t of tokens) if(titleTokens.includes(t)) score += 0.5;
+        if(score > 0 && (!best || score > best.score)) best = {entry, score};
+      }
+      // Heuristic threshold: require score >= 3 to be confident match
+      if(best && best.score >= 3) return best.entry;
+      return null;
+    }
+
+    // -----------------------------
+    // Enforce concise answer length (1-3 sentences)
+    // -----------------------------
+    function enforceConcise(text){
+      // naive sentence splitter by punctuation .!? — keep up to 3 sentences
+      const sentences = text.split(/(?<=[.?!])\s+/);
+      const keep = sentences.slice(0,3).join(' ').trim();
+      // ensure ends with punctuation
+      if(!/[.?!]$/.test(keep)) return keep + '.';
+      return keep;
+    }
+
+    // -----------------------------
+    // UI Helpers
+    // -----------------------------
+    const chat = document.getElementById('chat');
+    function appendUserMessage(text){
+      const container = document.createElement('div');
+      container.className = 'msg user';
+      container.innerHTML = `
+        <div class="avatar" aria-hidden="true">You</div>
+        <div>
+          <div class="bubble">${escapeHtml(text)}</div>
+          <div class="meta">now</div>
+        </div>`;
+      chat.appendChild(container);
+      chat.scrollTop = chat.scrollHeight;
+    }
+    function appendBotMessage(htmlContent, objectiveId=null, practices=null, outOfScope=false){
+      const container = document.createElement('div');
+      container.className = 'msg bot';
+      const oBadge = objectiveId ? `<span class="objective-badge" title="Mapped objective">${escapeHtml(objectiveId)}</span>` : '';
+      container.innerHTML = `
+        <div class="avatar" aria-hidden="true">PB</div>
+        <div>
+          <div class="bubble">${htmlContent}${objectiveId?'<div style="margin-top:8px">'+oBadge+'</div>':''}</div>
+          ${practices?`<div class="practice">${practices.map(p=>`• ${escapeHtml(p)}`).join('<br/>')}</div>`:''}
+          <div class="meta">${outOfScope?'<span class="oos">Out of scope</span> — Ask a Security+ focused question.':'Objective IDs map to SY0-701 topics.'}</div>
+        </div>`;
+      chat.appendChild(container);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    // simple html escape
+    function escapeHtml(s){ return String(s).replace(/[&<>"']/g, function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];}); }
+
+    // -----------------------------
+    // Query handler
+    // -----------------------------
+    function handleQuery(rawInput){
+      const q = rawInput.trim();
+      if(!q){
+        appendBotMessage('Please enter a Security+ question (for example: "What is MFA and why use it?").', null, null, true);
+        return;
+      }
+
+      appendUserMessage(q);
+
+      // Very simple ambiguity detection: if question too short (<3 tokens) ask for clarification
+      const tokenCount = normalizeText(q).split(' ').filter(Boolean).length;
+      if(tokenCount < 3){
+        appendBotMessage('That query is ambiguous. Please provide a little more detail (example: "How does MFA reduce risk compared to passwords only?").', null, null, true);
+        return;
+      }
+
+      // Try to find best match in objective map
+      const match = findBestMatch(q);
+
+      if(!match){
+        // Out of scope or unknown — follow FR-3.5
+        appendBotMessage(
+          'This topic appears ambiguous or outside the Security+ (SY0-701) objective mapping I have. Please ask a focused Security+ question (example: "Explain symmetric vs asymmetric encryption").',
+          null,
+          ['Try including a specific term (e.g., "TLS", "MFA", "ransomware") or name a control/topic.'],
+          true
+        );
+        return;
+      }
+
+      // Build concise answer (1-3 sentences)
+      const concise = enforceConcise(match.snippet);
+      appendBotMessage(concise, match.id, match.practices.slice(0,2), false);
+    }
+
+    // -----------------------------
+    // Event wiring
+    // -----------------------------
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const clearBtn = document.getElementById('clearBtn');
+
+    sendBtn.addEventListener('click', ()=>{
+      const text = userInput.value;
+      handleQuery(text);
+      userInput.value = '';
+      userInput.focus();
+    });
+
+    userInput.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' && (e.ctrlKey || e.metaKey)){
+        sendBtn.click();
+      }
+    });
+
+    clearBtn.addEventListener('click', ()=>{
+      chat.innerHTML = '';
+      userInput.value = '';
+      userInput.focus();
+    });
+
+    // initial welcome message
+    (function welcome(){
+      const welcomeHtml = `<strong>Welcome to PrepBot.</strong> Ask one focused Security+ question and you'll receive:<br/>
+        • A concise 1–3 sentence answer<br/>• A mapped SY0-701 objective ID<br/>• 1–2 actionable practice items`;
+      appendBotMessage(welcomeHtml, 'SY0-701 (map)', ['Try: "What is the difference between symmetric and asymmetric encryption?"']);
+    })();
+
+    // -----------------------------
+    // Accessibility: focus
+    // -----------------------------
+    userInput.focus();
+
+    // -----------------------------
+    // Developer notes (not shown in UI):
+    // - To improve objective accuracy: update OBJECTIVE_MAP entries and keywords to match official CompTIA SY0-701 objective numbering.
+    // - The app intentionally avoids external calls (per requirements). For production, hook this UI to a server-side verifier or LLM that can cite official objective IDs programmatically.
+    // -----------------------------
+  </script>
+</body>
+</html>
+```
+
+
