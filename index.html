@@ -1,11 +1,53 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <title>My First GitHub Page</title>
-  </head>
-  <body>
-    <h1>Hello, world!</h1>
-    <p>Welcome to my site hosted on GitHub Pages.</p>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My GitHub Pages Site</title>
+  <style>
+    /* Simple CSS styling */
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f9;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    header {
+      background: #4CAF50;
+      color: white;
+      padding: 20px;
+    }
+    h1 {
+      margin: 0;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Welcome to My GitHub Pages Site</h1>
+  </header>
+
+  <p>This is my first deployed website using GitHub Pages!</p>
+  <button onclick="sayHello()">Click Me</button>
+
+  <script>
+    // Simple JavaScript interaction
+    function sayHello() {
+      alert("Hello from GitHub Pages!");
+    }
+  </script>
+</body>
 </html>
