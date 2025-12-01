@@ -47,7 +47,7 @@ An AI-powered chatbot that helps students prepare for the CompTIA Security+ (SY0
 - **Visual Feedback**: Color-coded answers (green = correct, red = incorrect) with explanations
 
 ## Try It Yourself
-🔗 [Live Demo](https://carterdftcc.github.io/security-prepbot/)
+🔗 [Live Demo](https://claude.ai/public/artifacts/4ee20eeb-4bce-4c7f-aa0e-4d41562cccd6)
 
 > **Note**: Your progress is saved in your browser. Clear browser data will reset your stats.
 
