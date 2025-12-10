@@ -1,50 +1,30 @@
 # Hi, I'm Darryl Carter 👋
 
-## About Me
-Currently taking CSC-113 AI Fundamentals and learning to collaborate with AI tools!
-
-## My Foo 🎯
-I am trying to get underserved communities excited about STEM. Rather than spending time rotting on social media, I want them to leverage STEM as an investment in their future.
-
-## Currently Learning
-- 🤖 AI collaboration and prompt engineering
-- 🐙 GitHub workflows and version control
-- 💡 Building my first AI assistants
-
-## Fun Fact
-I am learning 3D modeling in Tinkercad so I can create something interesting.
-
-## Find Me
-- 📫 Right here on GitHub!
-
-
 # Security+ PrepBot MVP
 
-## What It Does
+##1 What It Does
 An AI-powered chatbot that helps students prepare for the CompTIA Security+ (SY0-701) certification exam. It provides instant answers to security concepts with official objective citations, offers practice quizzes with 100 questions, and uses intelligent spaced repetition to help students master difficult topics.
 
-## How to Use
+##2 How to Use/What it was supposed to do
 1. **Ask Questions**: Type any Security+ topic (e.g., "What is MFA?") and get instant answers with official exam objective references
 2. **Take Quizzes**: Click "Test Me" to start a 10-question practice quiz
 3. **Track Progress**: Click "📊 Stats" to view your mastery progress, accuracy, and areas needing improvement
 4. **Master Topics**: Answer questions correctly 3 times in a row to permanently master them and remove them from rotation
 5. **Focus on Weak Areas**: Missed questions automatically appear in your next quiz
 
-## Features Implemented
-- **Interactive Chatbot**: Ask questions about 10 core Security+ concepts with instant answers
-- **100-Question Quiz Bank**: Comprehensive practice questions covering all Security+ exam domains
-- **Smart Question Selection**: 
-  - Automatically prioritizes recently missed questions in next quiz
-  - Excludes mastered questions (3+ consecutive correct answers)
-  - Random selection from remaining unmastered questions
-- **Progress Tracking**: 
-  - Real-time statistics dashboard
-  - Question mastery tracking (shows X/3 progress toward mastery)
-  - Overall accuracy and coverage metrics
-  - Identifies questions needing more practice
-- **Persistent Storage**: All progress saved locally using browser localStorage
-- **Responsive Design**: Mobile-friendly interface that works on all devices
-- **Visual Feedback**: Color-coded answers (green = correct, red = incorrect) with explanations
+##3 How far did I get
+It turns out that I keep trying to do two things instead of one. When creating this agent, I wanted to use it as a trainer and allow the user to ask question and fill in the gaps in their knowlege. The second part was to create test bank based on the domains in CompTIA Security+. The more I read about it, I discover I wanted to use Retrieval-Augmented Generation. I had so many note, pdf, and copies of every question I could get my hands on. Then I was awaken to the reality of need to move to a paid version to accomodate the volume of information I wanted to upload.
+
+It works with the 220 question that I was able to upload into Claude. The issue that I created what after putting in the initial topics as a basis for asking questions, I overwhelmed my thread with upload different sets of question. 
+I was able to run this locally using Podman Desktop by create a container to act as my webserver. My downfall was in the create a a container that could adequately host Ollama to carry out the AI portion of the project. Because of my limited resource and the lack of a compatible GPU, the response times were just too slow to test. I believe that if I were willing to invest in more hardware, I would have been able to bring this project into reality. 
+
+The links shown below are two different iterations of adding question into Claude. As it stands I would give it 50% for the testbank, but only about 10% to 15% on the interactive portion. So overall, it is about 65% of where I want it to be. 
+<img width="897" height="686" alt="image" src="https://github.com/user-attachments/assets/6ba2b386-c6fe-492a-b5b1-83f785c725fe" />
+
+<img width="857" height="662" alt="image" src="https://github.com/user-attachments/assets/15edcb3d-98e1-47a3-be78-52050d24fcef" />
+
+<img width="888" height="668" alt="image" src="https://github.com/user-attachments/assets/d5c4cf4e-fc44-4157-9be0-ea9f017608ea" />
+
 
 ## Try It Yourself
 🔗 [Live Demo](https://claude.ai/public/artifacts/4ee20eeb-4bce-4c7f-aa0e-4d41562cccd6)
@@ -55,47 +35,10 @@ I updated this again. I increased the number of questions to 220.
 
 > **Note**: Your progress is saved in your browser. Clear browser data will reset your stats.
 
-## What I Learned
-Building this project taught me:
-- **Smart Algorithm Design**: Implementing spaced repetition and adaptive quiz selection based on user performance
-- **State Management**: Tracking complex user data (attempts, mastery status, consecutive streaks) across sessions
-- **User Experience Design**: Creating intuitive feedback systems that motivate continued learning
-- **localStorage API**: Persisting user data locally without a backend database
-- **Responsive Design**: Building a mobile-first interface that works seamlessly across devices
-- **Error Handling**: Gracefully managing edge cases like "all questions mastered" or empty statistics
+##4 What AI tools did you use. 
+I started with Gemini because I was fascinated with the Storybook Gem. I bounce between Notion and ChatGPT for most of my research and finally settle on Claude for a working prototpye.
 
-## Technical Highlights
-- **Pure Vanilla JavaScript**: No frameworks or libraries - just HTML, CSS, and JS
-- **Single File Application**: Entire app in one HTML file for easy deployment
-- **Intelligent Tracking System**: 
-  - Tracks consecutive correct answers (not just total correct)
-  - Differentiates between "new", "attempted", and "mastered" questions
-  - Automatically adjusts quiz difficulty based on performance
-- **Data Structures**: Used Sets and Arrays for efficient question tracking and filtering
 
-## Future Improvements
-- **Expanded Question Bank**: Add all 500+ practice questions covering every Security+ objective
-- **Performance Analytics**: Add charts showing progress over time and weak objective domains
-- **Study Mode**: Add flashcard-style learning for definitions and concepts
-- **Export Progress**: Allow users to download their statistics and mastered questions list
-- **Custom Quiz Settings**: Let users choose quiz length, specific domains, or difficulty levels
-- **Timed Quizzes**: Add optional timer to simulate real exam conditions
-- **Explanation Enhancement**: Add detailed explanations for each answer with links to study resources
-- **Multi-User Support**: Add user accounts to sync progress across devices
-
-## Browser Compatibility
-Tested and working on:
-- ✅ Chrome/Edge (v90+)
-- ✅ Firefox (v88+)
-- ✅ Safari (v14+)
-- ✅ Mobile browsers (iOS Safari, Chrome Mobile)
-
-## Setup Instructions
-1. Clone this repository
-2. Open `index.html` in any modern web browser
-3. No build process or dependencies required!
-
----
 
 **Built with ❤️ for Security+ exam preparation**
 
