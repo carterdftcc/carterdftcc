@@ -50,7 +50,8 @@ An AI-powered chatbot that helps students prepare for the CompTIA Security+ (SY0
 🔗 [Live Demo](https://claude.ai/public/artifacts/4ee20eeb-4bce-4c7f-aa0e-4d41562cccd6)
 
 I updated this again. I increased the number of questions to 200. 
-Update Live Demo
+
+[Update Live Demo](https://claude.ai/public/artifacts/c4684d89-6a26-4b7f-b18a-5f1d89bd9325)
 
 > **Note**: Your progress is saved in your browser. Clear browser data will reset your stats.
 
