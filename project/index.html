@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security+ PrepBot</title>
+    <style>
+        /* ========================================
+           GLOBAL STYLES & RESET
+           ======================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* ========================================
+           MAIN CONTAINER
+           ======================================== */
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 800px;
+            height: 90vh;
+            max-height: 700px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ========================================
+           HEADER SECTION
+           ======================================== */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px;
+            text-align: center;
+            border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* ========================================
+           CHAT MESSAGES AREA
+           ======================================== */
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .message.bot {
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .message-content {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.bot .message-content {
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            border-bottom-left-radius: 4px;
+        }
+
+        .objective-tag {
+            display: inline-block;
+            background: #ffc107;
+            color: #333;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 8px 0;
+        }
+
+        .practice-items {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .practice-items strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #667eea;
+        }
+
+        .practice-items ul {
+            margin-left: 20px;
+        }
+
+        .practice-items li {
+            margin-bottom: 6px;
+            line-height: 1.5;
+        }
+
+        /* ========================================
+           INPUT AREA
+           ======================================== */
+        .input-area {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 12px;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 24px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-area input:focus {
+            border-color: #667eea;
+        }
+
+        .input-area button {
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .input-area button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .input-area button:active {
+            transform: translateY(0);
+        }
+
+        .input-area button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ========================================
+           QUIZ MODE STYLES
+           ======================================== */
+        .quiz-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 16px 0;
+            border: 2px solid #667eea;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .quiz-score {
+            font-size: 18px;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .quiz-progress {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .quiz-question {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quiz-option {
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            text-align: left;
+            font-size: 15px;
+        }
+
+        .quiz-option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .quiz-option.selected {
+            border-color: #667eea;
+            background: #f0f3ff;
+        }
+
+        .quiz-option.correct {
+            border-color: #28a745;
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .quiz-option.incorrect {
+            border-color: #dc3545;
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .quiz-option.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .quiz-feedback {
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .quiz-feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .quiz-feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .quiz-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .quiz-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quiz-btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .quiz-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .quiz-btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .quiz-btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .quiz-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .quiz-results {
+            text-align: center;
+            padding: 24px;
+        }
+
+        .quiz-results h2 {
+            color: #667eea;
+            margin-bottom: 16px;
+        }
+
+        .quiz-results .score-display {
+            font-size: 48px;
+            font-weight: 700;
+            color: #667eea;
+            margin: 20px 0;
+        }
+
+        .quiz-results .percentage {
+            font-size: 24px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .test-button {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            margin-top: 12px;
+        }
+
+        .test-button:hover {
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+        }
+
+        .stats-button {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            margin-top: 12px;
+        }
+
+        .stats-button:hover {
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+        }
+
+        .stats-container {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 16px 0;
+        }
+
+        .stats-header {
+            text-align: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .stats-header h2 {
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8ebff 100%);
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #667eea;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .missed-questions {
+            margin-top: 24px;
+        }
+
+        .missed-questions h3 {
+            color: #333;
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        .missed-item {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .missed-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .missed-question-text {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+            flex: 1;
+        }
+
+        .missed-stats {
+            display: flex;
+            gap: 12px;
+            font-size: 13px;
+        }
+
+        .missed-stat {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .missed-stat.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .missed-stat.accuracy {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .question-indicator {
+            display: inline-block;
+            background: #ffc107;
+            color: #333;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .question-indicator.repeated {
+            background: #ff5722;
+            color: white;
+        }
+
+        .question-indicator.mastered {
+            background: #28a745;
+            color: white;
+        }
+
+        .mastered-questions {
+            margin-top: 24px;
+        }
+
+        .mastered-questions h3 {
+            color: #28a745;
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        .mastered-count {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .mastered-count-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #28a745;
+        }
+
+        .mastered-count-label {
+            font-size: 14px;
+            color: #155724;
+            margin-top: 4px;
+        }
+
+        /* ========================================
+           LOADING INDICATOR
+           ======================================== */
+        .typing-indicator {
+            display: none;
+            padding: 12px 16px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            border-bottom-left-radius: 4px;
+            max-width: 75px;
+        }
+
+        .typing-indicator.active {
+            display: inline-block;
+        }
+
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+            margin: 0 2px;
+            animation: bounce 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        /* ========================================
+           RESPONSIVE DESIGN
+           ======================================== */
+        @media (max-width: 600px) {
+            .container {
+                height: 100vh;
+                max-height: 100vh;
+                border-radius: 0;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+
+            .input-area {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ========================================
+         MAIN APPLICATION CONTAINER
+         ======================================== -->
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <h1>🔒 Security+ PrepBot</h1>
+            <p>CompTIA Security+ (SY0-701) Exam Preparation Assistant</p>
+        </div>
+
+        <!-- Chat Messages Area -->
+        <div class="chat-area" id="chatArea">
+            <div class="message bot">
+                <div class="message-content">
+                    <strong>Welcome to Security+ PrepBot!</strong><br>
+                    Ask me any question about CompTIA Security+ (SY0-701) exam topics, and I'll provide quick answers with official objective references and practice recommendations.
+                </div>
+            </div>
+        </div>
+
+        <!-- User Input Area -->
+        <div class="input-area">
+            <input 
+                type="text" 
+                id="userInput" 
+                placeholder="Ask about Security+ topics (e.g., 'What is a zero-day vulnerability?')"
+                autocomplete="off"
+            >
+            <button id="sendBtn" onclick="sendMessage()">Send</button>
+            <button id="testBtn" class="test-button" onclick="startQuiz()">Test Me</button>
+            <button id="statsBtn" class="stats-button" onclick="showStats()">📊 Stats</button>
+        </div>
+    </div>
+
+    <script>
+        /* ========================================
+           SECURITY+ KNOWLEDGE BASE
+           Mock database of Security+ topics mapped to objectives
+           ======================================== */
+        const securityKnowledge = {
+            'zero-day': {
+                objective: 'SY0-701 1.2',
+                answer: 'Newly discovered security flaws that attackers can exploit before a fix (patch) is available.',
+                practices: [
+                    'Review threat intelligence sources and vulnerability disclosure processes',
+                    'Practice identifying zero-day indicators in security incident scenarios'
+                ]
+            },
+            'phishing': {
+                objective: 'SY0-701 2.2',
+                answer: 'A cyberattack using deceptive emails or websites to trick individuals into revealing sensitive information like passwords or financial data.',
+                practices: [
+                    'Study different phishing variants: spear phishing, whaling, vishing, and smishing',
+                    'Review email security controls and anti-phishing technologies'
+                ]
+            },
+            'encryption': {
+                objective: 'SY0-701 1.4',
+                answer: 'The process of converting data into a secret code to prevent unauthorized access, ensuring privacy and security.',
+                practices: [
+                    'Compare symmetric vs asymmetric encryption algorithms and use cases',
+                    'Practice calculating encryption strength and understanding key management'
+                ]
+            },
+            'firewall': {
+                objective: 'SY0-701 3.3',
+                answer: 'Network security systems that monitor and control incoming and outgoing network traffic, blocking threats based on predefined rules.',
+                practices: [
+                    'Review firewall types: packet-filtering, stateful, proxy, and next-generation',
+                    'Practice creating and analyzing firewall rule sets for different scenarios'
+                ]
+            },
+            'multi-factor authentication': {
+                objective: 'SY0-701 2.4',
+                answer: 'A security measure requiring two or more verification methods (e.g., password and a phone code) to gain access to a resource.',
+                practices: [
+                    'Study the five authentication factors and their security trade-offs',
+                    'Review MFA implementation methods: SMS, authenticator apps, hardware tokens, and biometrics'
+                ]
+            },
+            'mfa': {
+                objective: 'SY0-701 2.4',
+                answer: 'A security measure requiring two or more verification methods (e.g., password and a phone code) to gain access to a resource.',
+                practices: [
+                    'Study the five authentication factors and their security trade-offs',
+                    'Review MFA implementation methods: SMS, authenticator apps, hardware tokens, and biometrics'
+                ]
+            },
+            'vulnerability': {
+                objective: 'SY0-701 1.3',
+                answer: 'Weaknesses in a system\'s design, implementation, or operation that could be exploited by threats.',
+                practices: [
+                    'Study common vulnerability types from the CVE database and CVSS scoring',
+                    'Practice vulnerability assessment methodologies and remediation prioritization'
+                ]
+            },
+            'incident response': {
+                objective: 'SY0-701 4.8',
+                answer: 'A planned approach a company takes to manage and contain a cybersecurity breach or attack effectively.',
+                practices: [
+                    'Memorize the six phases of the incident response lifecycle',
+                    'Review incident response team roles and documentation requirements'
+                ]
+            },
+            'public key infrastructure': {
+                objective: 'SY0-701 3.9',
+                answer: 'A system of digital certificates and authorities that verifies and authenticates the identity of users and devices, enabling secure electronic transactions and encryption.',
+                practices: [
+                    'Study PKI components: CA, RA, CRL, and OCSP',
+                    'Practice certificate lifecycle management and trust validation'
+                ]
+            },
+            'malware': {
+                objective: 'SY0-701 2.1',
+                answer: 'Malicious software designed to disrupt, damage, or gain unauthorized access to computer systems (e.g., viruses, ransomware, spyware).',
+                practices: [
+                    'Compare different malware types and their propagation methods',
+                    'Review malware detection techniques and anti-malware tools'
+                ]
+            },
+            'access control': {
+                objective: 'SY0-701 4.6',
+                answer: 'Security techniques that regulate who or what can view or use resources within a computing environment.',
+                practices: [
+                    'Study access control models and their appropriate use cases',
+                    'Practice implementing role-based access control (RBAC) scenarios'
+                ]
+            }
+        };
+
+        /* ========================================
+           QUIZ QUESTIONS DATABASE
+           100 Security+ practice questions
+           ======================================== */
+        const quizQuestions = [
+            { q: "Which attack uses a fraudulent wireless access point that mimics a legitimate one?", options: ["Bluesnarfing", "Evil twin", "Rogue hypervisor", "Jamming"], answer: 1 },
+            { q: "Which security control type is a firewall?", options: ["Managerial", "Technical", "Operational", "Corrective"], answer: 1 },
+            { q: "What is the purpose of a VLAN?", options: ["Increase wireless speed", "Log authentication attempts", "Segment network traffic", "Encrypt DNS queries"], answer: 2 },
+            { q: "Which cryptographic concept ensures data has not been modified?", options: ["Confidentiality", "Availability", "Integrity", "Non-repudiation"], answer: 2 },
+            { q: "A user reports that files have been encrypted and a message demands payment. Which attack occurred?", options: ["Rootkit", "Worm", "Ransomware", "Adware"], answer: 2 },
+            { q: "Which port does HTTPS typically use?", options: ["20", "21", "80", "443"], answer: 3 },
+            { q: "Which authentication method is based on something you have?", options: ["Password", "Biometrics", "Smart card", "PIN"], answer: 2 },
+            { q: "What is the primary function of a SIEM?", options: ["Encrypt drives", "Aggregate and correlate logs", "Manage mobile devices", "Scan for vulnerabilities"], answer: 1 },
+            { q: "Which wireless security protocol is the most secure?", options: ["WEP", "WPA", "WPA2", "WPA3"], answer: 3 },
+            { q: "What is the best mitigation against brute-force attacks?", options: ["Strong passwords", "Account lockout", "Port scanning", "Hashing"], answer: 1 },
+            { q: "A phishing email that targets executives is called:", options: ["Whaling", "Spear phishing", "Smishing", "Vishing"], answer: 0 },
+            { q: "Which device hides internal IP addresses from outside networks?", options: ["VPN", "Switch", "NAT", "WAF"], answer: 2 },
+            { q: "What is the purpose of a honeypot?", options: ["Improve load balancing", "Detect attacks by luring attackers", "Patch vulnerabilities", "Encrypt traffic"], answer: 1 },
+            { q: "Which protocol secures email transmission?", options: ["POP3", "IMAP", "SMTP over TLS", "FTP"], answer: 2 },
+            { q: "What type of malware relies on human actions to spread?", options: ["Worm", "Virus", "Rootkit", "Botnet"], answer: 1 },
+            { q: "A zero-day attack exploits:", options: ["Poor patch management", "Unknown vulnerabilities", "Weak passwords", "Unsecured Wi-Fi"], answer: 1 },
+            { q: "What is the primary purpose of a digital certificate?", options: ["Encrypt email", "Verify identity", "Create hashes", "Store passwords"], answer: 1 },
+            { q: "Which access control model is rule-based?", options: ["DAC", "RBAC", "MAC", "ABAC"], answer: 3 },
+            { q: "An attack that injects malicious code into SQL queries is called:", options: ["XSS", "DoS", "SQL injection", "RCE"], answer: 2 },
+            { q: "Which tool captures packets for analysis?", options: ["Nessus", "Nmap", "Wireshark", "Autopsy"], answer: 2 },
+            { q: "What is the primary purpose of MFA?", options: ["Encrypt data", "Provide multiple layers of authentication", "Reduce bandwidth", "Improve availability"], answer: 1 },
+            { q: "What is the most secure password hashing algorithm?", options: ["MD5", "SHA-1", "SHA-256", "bcrypt"], answer: 3 },
+            { q: "Which cloud model gives the customer the most control?", options: ["SaaS", "PaaS", "IaaS", "CASB"], answer: 2 },
+            { q: "A risk that remains after mitigating controls is called:", options: ["Residual risk", "Transferred risk", "Avoided risk", "Inherent risk"], answer: 0 },
+            { q: "What type of attack floods a system with traffic to make it unavailable?", options: ["MITM", "DDoS", "Replay", "Spoofing"], answer: 1 },
+            { q: "Which protocol is used for secure remote administration?", options: ["Telnet", "SSH", "FTP", "RDP (unencrypted)"], answer: 1 },
+            { q: "Which law protects health information?", options: ["SOX", "GLBA", "HIPAA", "FISMA"], answer: 2 },
+            { q: "A device that filters traffic based on rules is a:", options: ["IDS", "SIEM", "Firewall", "Proxy"], answer: 2 },
+            { q: "What type of malware hides its existence from the operating system?", options: ["Adware", "Worm", "Rootkit", "Trojan"], answer: 2 },
+            { q: "Which wireless attack forces clients to reauthenticate?", options: ["Jamming", "Deauthentication attack", "Evil twin", "Bluejacking"], answer: 1 },
+            { q: "One-time use random values used in authentication are called:", options: ["Salts", "Tokens", "Nonces", "Keys"], answer: 2 },
+            { q: "Which security concept requires two individuals to complete a task?", options: ["Separation of duties", "Privilege escalation", "Least privilege", "Baselining"], answer: 0 },
+            { q: "What does geofencing use?", options: ["Biometrics", "GPS boundaries", "MFA tokens", "Hashing"], answer: 1 },
+            { q: "A user enters code into a web form that runs in someone else's browser. This describes:", options: ["SQL injection", "CSRF", "DLL injection", "XSS"], answer: 3 },
+            { q: "Which attack involves intercepting and altering communication between two parties?", options: ["MITM", "Phishing", "Whaling", "DDoS"], answer: 0 },
+            { q: "What is a sandbox used for?", options: ["Load balancing", "Running suspicious files safely", "Encrypting backups", "Managing logs"], answer: 1 },
+            { q: "What type of backup only copies files changed since the last full backup?", options: ["Full", "Differential", "Incremental", "Snapshot"], answer: 1 },
+            { q: "Tokenization is primarily used for:", options: ["Protecting credit card data", "Packet filtering", "MFA", "Risk scoring"], answer: 0 },
+            { q: "What is the best mitigation for tailgating?", options: ["Security guards", "Strong passwords", "Firewalls", "CCTV"], answer: 0 },
+            { q: "Which tool tests system security by simulating attacks?", options: ["Vulnerability scanner", "Pentest toolkit", "IDS", "SIEM"], answer: 1 },
+            { q: "Which algorithm is asymmetric?", options: ["DES", "AES", "RSA", "Blowfish"], answer: 2 },
+            { q: "A false positive in security monitoring means:", options: ["Attack occurred and was detected", "Attack occurred but was not detected", "No attack occurred but alert triggered", "No attack and no alert"], answer: 2 },
+            { q: "Blockchain provides which security benefit?", options: ["Centralized logging", "Redundancy", "Immutable records", "Faster encryption"], answer: 2 },
+            { q: "What is the purpose of a WAF?", options: ["Protect against SQL injection", "Configure email servers", "Encrypt hard drives", "Scan wireless networks"], answer: 0 },
+            { q: "Which term describes identifying valuable assets?", options: ["Baselining", "Asset classification", "Hardening", "Deconfliction"], answer: 1 },
+            { q: "What type of malware pretends to be legitimate?", options: ["Worm", "Trojan", "Rootkit", "RAT"], answer: 1 },
+            { q: "What is secure boot designed to prevent?", options: ["SQL injection", "Unauthorized OS modification", "DDoS", "Spam"], answer: 1 },
+            { q: "Which protocol uses port 22?", options: ["SSH", "SMTP", "DNS", "DHCP"], answer: 0 },
+            { q: "What is the primary purpose of hashing a password?", options: ["Increase speed", "Obfuscation", "Protect stored passwords", "Improve logging"], answer: 2 },
+            { q: "The process of reducing attack surfaces is called:", options: ["Patching", "Hardening", "Hashing", "Partitioning"], answer: 1 },
+            { q: "Which control detects malicious activity?", options: ["IDS", "Firewall", "VPN", "CASB"], answer: 0 },
+            { q: "What is the main weakness of WEP?", options: ["Key length", "Static IVs", "Uses AES", "Strong encryption"], answer: 1 },
+            { q: "Which cloud concept allows rapid resource allocation?", options: ["Elasticity", "Tokenization", "CASB", "Cryptography"], answer: 0 },
+            { q: "What is the purpose of a security baseline?", options: ["Establish minimum configuration standards", "Encrypt traffic", "Monitor uptime", "Perform backups"], answer: 0 },
+            { q: "What is an example of credential stuffing?", options: ["Using stolen passwords on multiple sites", "Guessing passwords", "Phishing executives", "Intercepting traffic"], answer: 0 },
+            { q: "Which standard governs credit card data security?", options: ["GDPR", "PCI-DSS", "GLBA", "HIPAA"], answer: 1 },
+            { q: "What does token-based authentication rely on?", options: ["Certificates", "Disposable codes", "Password reuse", "Biometrics"], answer: 1 },
+            { q: "What is the best method to secure APIs?", options: ["Firewalls", "Rate limiting and authentication", "Antivirus", "DHCP"], answer: 1 },
+            { q: "Which RAID level provides fault tolerance with one drive of parity?", options: ["RAID 0", "RAID 1", "RAID 5", "RAID 10"], answer: 2 },
+            { q: "What is the purpose of port security on a switch?", options: ["Encrypt web apps", "Limit devices on a port", "Block internet access", "Authenticate VPNs"], answer: 1 },
+            { q: "Which vulnerability scan type tests without credentials?", options: ["Active", "Passive", "Unauthenticated", "Credentialed"], answer: 2 },
+            { q: "A security camera is which control type?", options: ["Technical", "Administrative", "Physical", "Corrective"], answer: 2 },
+            { q: "Which technique prevents session hijacking?", options: ["TLS", "DNSSEC", "VPN", "SIEM"], answer: 0 },
+            { q: "A logic bomb requires:", options: ["Remote command", "Root privileges", "A triggering event", "Email phishing"], answer: 2 },
+            { q: "Which protocol is used for directory-based authentication?", options: ["LDAP", "SMB", "FTP", "DNS"], answer: 0 },
+            { q: "What attack exploits human curiosity?", options: ["Tailgating", "Dumpster diving", "Baiting", "Shoulder surfing"], answer: 2 },
+            { q: "What is the primary benefit of virtualization security?", options: ["Faster storage", "Isolation", "Lower heating costs", "Tokenization"], answer: 1 },
+            { q: "What is an SLA used for?", options: ["Encrypt data", "Define service expectations", "Monitor bandwidth", "Provide MFA"], answer: 1 },
+            { q: "Which encryption mode is best for disk encryption?", options: ["ECB", "CBC", "GCM", "XTS"], answer: 3 },
+            { q: "Which type of testing assumes no knowledge of the system?", options: ["White-box", "Gray-box", "Black-box", "Code review"], answer: 2 },
+            { q: "Which threat actor is most sophisticated?", options: ["Script kiddies", "Hacktivists", "State-sponsored groups", "Insider threats"], answer: 2 },
+            { q: "Which security tool blocks malicious websites based on URL?", options: ["DNS sinkhole", "Load balancer", "Firewall", "IDS"], answer: 0 },
+            { q: "Which malware is controlled remotely?", options: ["Rootkit", "RAT", "Worm", "Trojan"], answer: 1 },
+            { q: "Which standard relates to information security management?", options: ["ISO 27001", "NIST 800-53", "PCI-DSS", "FISMA"], answer: 0 },
+            { q: "What is the first step in incident response?", options: ["Eradication", "Identification", "Recovery", "Containment"], answer: 1 },
+            { q: "A vulnerability is exploited by what?", options: ["Threat", "CIA", "Control", "Audit"], answer: 0 },
+            { q: "Which biometric has the lowest false acceptance rate?", options: ["Voice", "Face", "Retinal scan", "Fingerprint"], answer: 2 },
+            { q: "A keylogger is best classified as:", options: ["Hardware attack", "Spyware", "Worm", "Ransomware"], answer: 1 },
+            { q: "What is MTTR?", options: ["Mean time to restore", "Mean time to risk", "Maximum tolerated response", "Machine threat ratio"], answer: 0 },
+            { q: "Which technique verifies user actions are intentional?", options: ["CAPTCHA", "Tokenization", "Hashing", "Load balancing"], answer: 0 },
+            { q: "A VPN tunnel primarily provides:", options: ["Availability", "Confidentiality and integrity", "Tokenization", "Hashing"], answer: 1 },
+            { q: "Which attack steals browser cookies?", options: ["SQL injection", "XSS", "DDoS", "MITM"], answer: 1 },
+            { q: "What does EDR focus on?", options: ["Email filtering", "Endpoint detection and response", "Disaster recovery", "Server patching"], answer: 1 },
+            { q: "What is an example of a compensating control?", options: ["CCTV after a theft", "Temporary manual review when MFA is unavailable", "Strong password policies", "Firewall rules"], answer: 1 },
+            { q: "What is the most accurate form of biometric authentication?", options: ["Retina scan", "Fingerprint", "Voice", "Hand geometry"], answer: 0 },
+            { q: "Which certificate type is used for multiple subdomains?", options: ["Root certificate", "Wildcard certificate", "Domain certificate", "Code-signing certificate"], answer: 1 },
+            { q: "What attack uses an attacker-controlled DNS server?", options: ["Pharming", "Spoofing", "MITM", "ARP poisoning"], answer: 0 },
+            { q: "SAML is primarily used for:", options: ["File encryption", "Single sign-on", "DNS security", "Network segmentation"], answer: 1 },
+            { q: "Which document outlines how to handle incidents?", options: ["SLA", "IRP", "NDA", "AUP"], answer: 1 },
+            { q: "What is the purpose of a digital signature?", options: ["Compress files", "Verify integrity and authenticity", "Encrypt drives", "Reduce bandwidth"], answer: 1 },
+            { q: "What is an air gap?", options: ["Wireless encryption", "Physical network isolation", "VPN tunnel", "VLAN misconfiguration"], answer: 1 },
+            { q: "A botnet is controlled by a:", options: ["Threat analyst", "C2 server", "CASB", "VPN"], answer: 1 },
+            { q: "What is PII?", options: ["Public information", "Personal identifiable information", "Protected internal information", "Private industrial information"], answer: 1 },
+            { q: "What is the goal of patch management?", options: ["Reduce vulnerabilities", "Increase bandwidth", "Encrypt traffic", "Improve wireless range"], answer: 0 },
+            { q: "What is a cold site?", options: ["Fully equipped backup site", "Basic infrastructure only", "Offsite storage for tapes", "High availability server"], answer: 1 },
+            { q: "A certificate revocation list (CRL) is used to:", options: ["Fix DNS", "Identify revoked certificates", "Encrypt backups", "Patch servers"], answer: 1 },
+            { q: "Which protocol secures VoIP?", options: ["SIP-TLS", "DNSSEC", "SNMPv1", "POP3"], answer: 0 },
+            { q: "BYOD risks can be mitigated by:", options: ["MFA", "MDM", "VPN", "VLANs alone"], answer: 1 },
+            { q: "Which backup strategy provides the fastest restore time?", options: ["Incremental", "Differential", "Full", "Snapshot"], answer: 3 },
+            { q: "Which tool tests for open ports?", options: ["Nmap", "Wireshark", "Nessus", "Syslog"], answer: 0 },
+            
+            // Module 1: Introduction to Information Security (30 questions)
+            { q: "You have excellent technical acumen and oversee daily operations as well as analyze and design security solutions. You encounter a situation that needs to be escalated. Who are you most likely to approach?", options: ["CIO", "CISO", "Security manager", "Security administrator"], answer: 2 },
+            { q: "When analyzing a security breach, you determine the attacker changed the price of an item from $200 to $20. What security protection was compromised?", options: ["Confidentiality", "Integrity", "Authorization", "Authentication"], answer: 1 },
+            { q: "A visitor supplies their license and personal information via a kiosk to access a military base but is limited to certain areas only. What security principles are being employed? (Select two)", options: ["Authentication", "Authorization", "Confidentiality", "Accounting", "Availability"], answer: 0 },
+            { q: "What could prevent unauthorized parties from viewing sensitive customer information at a retail store?", options: ["Use software to encrypt data in a secure database", "Verify the ID of the party requesting access", "Limit access to certain areas once access is granted", "Ensure the data cannot be manipulated"], answer: 0 },
+            { q: "A system may have been compromised. What can be implemented to help identify who logs in going forward?", options: ["Authentication", "Authorization", "Availability", "Accounting"], answer: 3 },
+            { q: "You boot a computer with a bootable flash drive containing security tools and remove a virus. What type of control did you employ?", options: ["Deterrent", "Corrective", "Directive", "Compensating"], answer: 1 },
+            { q: "As a consultant, you help implement security awareness training. This falls under what control scope?", options: ["Define an acceptable use policy", "Install a card reader", "Install hardware to block malicious content", "Implement security awareness training"], answer: 3 },
+            { q: "What best describes cybersecurity and information security? (Select three)", options: ["Cybersecurity primarily protects devices", "Information security falls under cybersecurity umbrella", "Cybersecurity guarantees more safety", "Information security protects using products, people, and procedures", "Cybersecurity is more inconvenient"], answer: 0 },
+            { q: "What entity would a threat actor most likely attack to steal design documents for a recently announced government missile defense contract?", options: ["Individual", "Government", "Enterprise", "For-profit organization"], answer: 2 },
+            { q: "An attacker hacks a cell phone to steal credit card information and tries to extend the activity to contacts. What entity was targeted?", options: ["An enterprise", "A competitor", "An individual", "A government agency"], answer: 2 },
+            { q: "A malicious actor lacking technical knowledge uses an attack tool successfully. What activities are they most likely to perform? (Select two)", options: ["Blackmail", "Copy data", "Corrupt data", "Disrupt service", "Manipulate data"], answer: 1 },
+            { q: "A well-intentioned instructor purchases a wireless router and connects it to the network to allow students connectivity. What activity is this?", options: ["APT", "Shadow IT", "Insider threat", "Ethical hacking"], answer: 1 },
+            { q: "What would motivate organized crime actors to add cyberattacks to their portfolio?", options: ["Espionage", "Create chaos", "Philosophical beliefs", "Increased financial gain"], answer: 3 },
+            { q: "Why would a criminal organization pursue cyberattacks as their new mode of operation?", options: ["Easier to hide their tracks", "Generate disruption", "Less competition", "Political beliefs"], answer: 0 },
+            { q: "A work-study student gains additional privileges and changes their grade. What type of scenario is this?", options: ["Cyberterrorism", "Insider threat", "Shadow IT", "Revenge"], answer: 1 },
+            { q: "A group with strong aversion to certain political ideologies launches a cyberattack. What type of threat actor is this?", options: ["Hacktivist", "Nation-state actors", "Brokers", "Competitors"], answer: 0 },
+            { q: "A broker launches attacks to find a weakness. What activity are they most likely to engage in?", options: ["Steal classified information", "Sell information about a vulnerability", "Create and sell malicious software", "Obtain and sell pirated software"], answer: 1 },
+            { q: "Company A launches an attack against Company B to steal intellectual property. What type of threat actor is this?", options: ["Hacker in a hoodie", "Script kiddie", "Competitors", "Revengeful"], answer: 2 },
+            { q: "An entity commits to a multiyear intrusion campaign for national security information. What type of attack? (Select two)", options: ["Service disruption", "Data exfiltration", "Data breach", "Espionage", "APT"], answer: 1 },
+            { q: "What will a nation-state actor most likely do if their attacks are not successful?", options: ["Use different attack tools", "Hire more malicious actors", "Move on to different target", "Continue trying until successful"], answer: 3 },
+            { q: "What describes mainstream attack surfaces and specialized threat vectors? (Select three)", options: ["Both targeted with same frequency", "A network is mainstream attack surface", "An MSP is mainstream attack surface", "Imposter calling elderly is specialized vector", "One targets client software, other targets supply chain"], answer: 1 },
+            { q: "You receive a text indicating your bank account is locked. What threat vector is this? (Select three)", options: ["Communications", "Mainstream", "Specialized", "SMS", "MMS", "IM"], answer: 0 },
+            { q: "A modular router will be in EOL state within six months. What should the company do?", options: ["Replace the modules", "Upgrade the operating system", "Update the firmware", "Replace the router with new model"], answer: 3 },
+            { q: "New hardware has a specific IP and supports Telnet and FTP connections. What vulnerabilities exist? (Select three)", options: ["Open ports and services", "Unsecure protocols", "Default settings", "Firmware", "Zero-day"], answer: 0 },
+            { q: "An attacker is first to discover a vulnerability and exploits it. What could have prevented this?", options: ["External agency testing", "Comprehensive internal testing", "Follow security specifications", "High probability it could not be prevented"], answer: 3 },
+            { q: "Credit card data is stolen and reported in news. What is the impact? (Select two)", options: ["Availability loss", "Loss of reputation", "Income generating loss", "Possible prison time for IT personnel"], answer: 1 },
+            { q: "An organization authors documents defining policies and procedures for security controls. What type of resource?", options: ["Standard", "Regulation", "Framework", "Benchmark"], answer: 2 },
+            { q: "What describes NIST RMF and NIST CSF? (Select two)", options: ["RMF includes respond and recover", "Both help assess and manage risks", "Result of state regulations", "Define tiers based on vulnerabilities", "CSF includes protect and detect"], answer: 3 },
+            { q: "What are challenges when trying to be in regulatory compliance for information security?", options: ["Every industry has own regulations", "Requirement in one may negate another", "No two states share same regulations", "All of these choices"], answer: 3 },
+            { q: "Where would you look for information on attacker behavior and how they coordinate attacks?", options: ["TTP database", "Data feeds", "Threat feeds", "Vulnerability feeds"], answer: 0 },
+            
+            // Module 2: Pervasive Attack Surfaces and Controls (30 questions)
+            { q: "A fired employee tries to enter on weekend claiming they forgot access card. What attack surface are they exploiting?", options: ["Human vector", "Mobile device", "Hardware", "Specialized vector"], answer: 0 },
+            { q: "CEO calls help desk in panic for password reset. Technician says to use online system. CEO gets irate. What happened?", options: ["Technician should request manager approval", "Technician should have changed password", "This is social engineering", "Technician did the right thing"], answer: 3 },
+            { q: "You receive email from Jon Dough with survey link but email is from different company. What is true? (Select two)", options: ["Potential BEC attack", "Potential phishing attack", "Legitimate because name appears", "Potential whaling attack", "More likely to click because reason supplied"], answer: 1 },
+            { q: "Company A sends fictitious overdue invoice to Company B hoping for payment. What type of attack? (Select two)", options: ["BEC", "Phishing", "Executive fraud", "Brand impersonation", "Account compromise"], answer: 0 },
+            { q: "You receive call from someone pretending to be government agent requesting private information. What is this?", options: ["Vishing", "Smishing", "Vectoring", "Pretexting"], answer: 3 },
+            { q: "What describes typo squatting and cybersquatting? (Select two)", options: ["Cybersquatting registers domains with trademarks then sells", "Cybersquatting changes letter hoping for single-bit error", "Typo squatting renders HTTP 404 error", "Domain with one-letter change is typo squatting"], answer: 0 },
+            { q: "You enter websiteA.com but are redirected to websiteB.com due to infected DNS. What exploit is this?", options: ["Single-bit error in computer", "Single-bit error in DNS server", "Bitsquatting", "Pharming"], answer: 3 },
+            { q: "What describes misinformation and disinformation? (Select two)", options: ["Misinformation is hoax", "One is false other is inaccurate", "Disinformation is type of misinformation", "Misinformation has malicious intent", "False warning is disinformation"], answer: 2 },
+            { q: "Engineers from large firm visit professional organization website. Attacker infects website to target them. What attack?", options: ["Spear phishing", "Executive fraud", "Watering hole attack", "Business executive compromise"], answer: 2 },
+            { q: "Threat actor gets job with cleaning establishment to obtain information. What attack are they engaging in?", options: ["Dumpster diving", "Shoulder surfing", "Cyber espionage", "Google dorking"], answer: 0 },
+            { q: "What describes spear phishing and whaling? (Select two)", options: ["Whaling targets wealthy individuals and executives", "Spear phishing uses customized information", "Whaling sends millions of generic messages", "Whaling is not a form of phishing", "Spear phishing uses email, whaling does not"], answer: 0 },
+            { q: "Text message says bank password changed, needs verification with number or link. What type of attack?", options: ["Vishing", "Smishing", "Urgency attack", "Account compromise attack"], answer: 1 },
+            { q: "What can be included under physical security controls? (Select three)", options: ["Data leakage", "Gel-based paint", "Perimeter defenses", "Industrial camouflage", "Regular chain-link fencing"], answer: 0 },
+            { q: "Fence can be easily scaled. What additional fencing-deterrent measures? (Select three)", options: ["Anticlimb collar", "Roller barrier", "Rotating spikes", "Chain-link fence", "Barricades in front"], answer: 0 },
+            { q: "Security guard patrols perimeter under video surveillance and checks restricted areas. What security? (Select two)", options: ["High-visibility security", "Two-person integrity", "Active security defense", "Proactive video surveillance", "Preemptive security controls"], answer: 1 },
+            { q: "Alarm system emits and detects signal in light spectrum for motion detection. What type of signal?", options: ["802.11", "Infrared", "Microwave", "Light-emitting"], answer: 1 },
+            { q: "System in warehouse detects daylight levels and triggers alarm for intruders. What signal/radio wave?", options: ["Wi-Fi", "Microwave", "Ultrasonic", "Passive infrared"], answer: 1 },
+            { q: "Ultrasonic sensor triggers alarm 1/4 second after detecting intruder. How far was intruder?", options: ["21 meters", "43 meters", "86 meters", "172 meters", "343 meters"], answer: 1 },
+            { q: "What technology detects when vehicle enters restricted area and determines direction?", options: ["Ultrasonic sensors", "Barometric vestibule", "Pressure sensors", "Motion sensors"], answer: 2 },
+            { q: "What security buffer at high-security data center requiring clearance?", options: ["Restricted security waiting room", "High-security reception area", "Security guards and barriers", "Access control vestibule"], answer: 3 },
+            { q: "What could be considered a security buffer? (Select two)", options: ["Lobby of bank", "Ticket booth at cinema", "Reception area of company", "Waiting room at doctor's office"], answer: 2 },
+            { q: "What type of locks should be recommended for controlled access? (Select two)", options: ["Lock opened with Bluetooth code from phone", "Programmable electronic lock with keypad and logging", "Two physical keys for ingress and egress", "Keyed cylinder requiring one key", "Virtual keypad with non-fixed numbers"], answer: 0 },
+            { q: "How does Faraday cage prevent data leakage?", options: ["Prevents EMI from escaping enclosure", "Used in crime scene to prevent data loss", "Used in cable conduits during transmission", "Triggers alarm if devices removed"], answer: 0 },
+            { q: "Large complex needs very high-speed, low maintenance classified network. What type of PDS?", options: ["Secure carrier PDS", "Hardened carrier PDS", "Alarmed carrier PDS", "Protected carrier PDS"], answer: 2 },
+            { q: "What lists data types from highest to lowest protection level?", options: ["Restricted, critical, intellectual property", "Private, internal, regulated", "Confidential, private, sensitive", "Critical, trade secret, secret"], answer: 2 },
+            { q: "What should be considered when classifying data elements? (Select two)", options: ["Criticality", "Sensitivity", "Secrecy", "Confidentiality", "Integrity"], answer: 3 },
+            { q: "Company designs artifact and applies for patent. What type of data is protected?", options: ["Trade secret", "Restricted", "Regulated", "IP"], answer: 3 },
+            { q: "Medical records company suffers significant data breach. Who must they notify?", options: ["DHS", "DHHS", "HIPPA", "HIPAA"], answer: 1 },
+            { q: "What examples describe states in which data could reside? (Select three)", options: ["Data deleted and unrecoverable", "Data corrupted by malware", "Data in RAM about to be transmitted", "Data on hard drive about to be accessed", "Downloading image from website"], answer: 2 },
+            { q: "Company needs test data that cannot be reversed to original. What process? (Select two)", options: ["Data segmentation", "Data tokenization", "Data masking", "Data sanitation", "Data encryption"], answer: 2 },
+            
+            // Module 3: Fundamentals of Cryptography (30 questions)
+            { q: "Sending an image file containing a secret message with instructions on how to read it uses what technique?", options: ["Hashing", "Encryption", "Stenography", "Steganography"], answer: 3 },
+            { q: "Two people switch from English to Spanish when someone approaches. What form of security did they employ?", options: ["Tokenization", "Encryption", "Substitution", "Steganography"], answer: 1 },
+            { q: "ROT13 and XOR cipher are demonstrated. What statements are true? (Select two)", options: ["ROT13 uses transposition", "XOR uses metadata", "Both methods use substitution", "XOR requires some type of key", "Class easily decrypts XOR"], answer: 2 },
+            { q: "An app deliberately introduces 5-15 second delay before encryption begins. What type of data is about to be encrypted?", options: ["Plaintext", "Cleartext", "Ciphertext", "Pretext"], answer: 0 },
+            { q: "What critical factor allows cryptographic algorithms to be effective?", options: ["Algorithm details must be guarded", "Algorithm and keys must be guarded", "Must guarantee confidentiality", "Key(s) must be securely guarded"], answer: 3 },
+            { q: "What are benefits of cryptography? (Select two)", options: ["Mitigation technique", "Hashing technique", "Hardening technique", "Cipher algorithms are secret", "Can hide existence of data"], answer: 0 },
+            { q: "Immutable archiving system uses cryptography to verify data hasn't changed. What security protection?", options: ["Immutability of data", "Nonrepudiation", "Integrity", "Data masking"], answer: 2 },
+            { q: "Employee masks identity in email promoting personal product. Investigation confirms sender. What cryptography capability?", options: ["Metadata", "Obfuscation", "Repudiation", "Nonrepudiation"], answer: 3 },
+            { q: "Scientists sign nondisclosure agreement to not reveal major discovery. What approach?", options: ["Diffie-Hellman", "Secure obfuscation", "Signed message digest", "Security through obscurity"], answer: 3 },
+            { q: "What describes stream cipher and block cipher differences? (Select two)", options: ["Both like one-time pad", "Stream ciphers less secure", "Stream ciphers randomize output", "Block ciphers reset after iteration", "Block ciphers replace characters one at time"], answer: 1 },
+            { q: "String of characters next to download link says 'use to verify file integrity'. What does it represent? (Select four)", options: ["A hash", "A dynamic OTP", "A message digest", "A digital fingerprint", "Key to decrypt file", "Result of one-way algorithm"], answer: 0 },
+            { q: "Writing specifications for new hashing algorithm. What factors ensure security? (Select three)", options: ["Encryption and decryption use same key", "Include private key encryption", "Every unique input renders unique output", "Output always fixed size", "Output should be original"], answer: 2 },
+            { q: "Which hash algorithms should be used to convey hash over phone? (Select three)", options: ["ECC", "MD5", "MDRipe", "RipeMD", "SHA-2", "SHA-4", "Whirlpool"], answer: 3 },
+            { q: "Company exploring symmetric key algorithms. What is a concern?", options: ["Both encryption and decryption keys must be private", "If public key encrypts it should not decrypt", "Private and public keys must be secure", "The key must be kept private"], answer: 3 },
+            { q: "What describes AES and Blowfish characteristics? (Select three)", options: ["AES is stream cipher, Blowfish is block", "Both use private key cryptography", "Blowfish uses 512-bit key", "AES uses 256-bit key", "Blowfish operates on 64-bit blocks", "Blowfish uses 3DES cipher"], answer: 1 },
+            { q: "User encrypts with public key, recipient decrypts with private key. What conclusion?", options: ["Private key cryptography used", "Symmetric algorithm used", "Asymmetric algorithm used", "Must use private key to encrypt"], answer: 2 },
+            { q: "Explaining symmetric vs asymmetric to CEO. What statement to convey?", options: ["Symmetric uses public key cryptography", "ECC is among better asymmetric algorithms", "RSA is sound for low-power devices", "Symmetric algorithms more secure"], answer: 1 },
+            { q: "Message sent but recipient can't verify sender, only that it wasn't altered. What could enable sender verification? (Select two)", options: ["Use her public key instead of private", "Use his public key instead of private", "Generate digital signature and attach", "Generate digest and encrypt with signature", "Generate digest and encrypt with private key"], answer: 2 },
+            { q: "Which statement is true regarding hashing?", options: ["Verify integrity of message", "Encrypt secure message digest", "ECC and RSA are hashing algorithms", "Secure private and public keys"], answer: 0 },
+            { q: "What key combination confirms message integrity and sender authenticity?", options: ["Sender's public and recipient's private", "Sender's public and recipient's public", "Sender's private and recipient's public", "Sender's private and recipient's private"], answer: 0 },
+            { q: "What is true about key exchange solutions?", options: ["Perfect forward secrecy uses random keys for each session", "DHE uses same key until expiration timer", "DH employs temporary keys used once", "ECDH uses elliptic curve with prime numbers"], answer: 0 },
+            { q: "Setting up encrypted folder on Windows. What most likely to use?", options: ["GnuPG", "EFS", "TDE", "FDE", "FileVault"], answer: 1 },
+            { q: "Hard drive from crashed computer cannot be accessed as secondary drive. Probable cause? (Select two)", options: ["FDE", "BitLocker", "Volume-level encryption", "Partition-level encryption", "MBR/GPT-level encryption"], answer: 0 },
+            { q: "Encrypt databases with minimal performance degradation. Which encryption method?", options: ["Column-level encryption", "File-level encryption", "Table-level encryption", "Record-level encryption", "Cell-level encryption"], answer: 1 },
+            { q: "What represents true statements about software and hardware encryption? (Select three)", options: ["TEE is very secure software model", "Hardware encryption cannot be exploited like software", "SEDs require authentication before access", "TEE protects confidentiality and integrity", "HSM is software-based with secure keys"], answer: 1 },
+            { q: "How does Blockchain use cryptography to ensure data integrity?", options: ["Uses hash algorithms to encrypt transactions", "Uses hash algorithms to record transactions", "Uses symmetric algorithms to record", "Uses asymmetric algorithms to record"], answer: 1 },
+            { q: "What describes challenge with securing low-powered devices with fast response times?", options: ["Response time inadequate", "Cryptographic algorithms require time and energy", "More expensive due to small size", "No significant challenges"], answer: 1 },
+            { q: "Person can't remember encryption key for valuable Bitcoin password. Security professional determines the key. What did they use?", options: ["Reverse hashing algorithm", "Ciphertext attack", "Collision attack", "Quantum computer"], answer: 1 },
+            { q: "Attempting to find two different sets of input text yielding same MD5 hash. What type of attack?", options: ["Birthday paradox", "Plaintext attack", "Collision attack", "Downgrade attack", "Misconfiguration attack"], answer: 2 },
+            { q: "Wireless network supports two most recent protocols. What attack most likely to breach security?", options: ["Entropy attack", "Protocol attack", "Upgrade attack", "Downgrade attack"], answer: 3 },
+            
+            // Module 4: Advanced Cryptography (30 questions)
+            { q: "Asymmetric algorithm sends message with digital signature. What conclusion can you draw?", options: ["Recipient can conclusively say message from sender", "Digital signature created using sender's public key", "If intercepted cannot be compromised", "Sender may not own the key used"], answer: 3 },
+            { q: "How is digital signature different from digital certificate? (Select two)", options: ["Digital certificate confirms owner's identity", "Digital certificate more trustworthy than signature", "Digital signature confirms sender's identity", "Both signed by third party", "Digital signature like passport or license"], answer: 0 },
+            { q: "Suspicious about online bank offering high interest. What can help determine if trusted site?", options: ["Check digital signature", "Check digital certificate", "Contact certificate authority", "Contact digital signature authority"], answer: 1 },
+            { q: "What information in digital signature and/or certificate? (Select two)", options: ["Digital signature contains public key", "Digital certificate contains private key", "Digital certificate contains digital signature", "Digital signature contains expiration date", "Digital signature can contain email", "Digital certificate can contain postal address"], answer: 2 },
+            { q: "What can authenticate person requesting digital certificate (like REAL ID vs traditional ID)?", options: ["Authenticated with CRL query", "Authenticated with digital signature", "Authenticated with email address", "Authenticated with birth certificate"], answer: 3 },
+            { q: "Which most accurately describes CSR generation process?", options: ["Create keys, sign with private key, send private key to RA", "Create keys, sign with private key, send public key to RA", "Create keys, sign with public key, send private key to RA", "Create keys, sign with public key, send public key to RA"], answer: 3 },
+            { q: "What describes role of RA, CA, or intermediate CA?", options: ["Intermediate CA performs functions on behalf of CA", "Intermediate CA requires in-person application", "RA performs functions on behalf of CA", "RA electronically signs private keys"], answer: 0 },
+            { q: "Setting up local entity to view digital certificate status. What to set up?", options: ["CR", "CRA", "CRL", "CRM"], answer: 0 },
+            { q: "Certificate needs to be added to CRL but delayed. What is potential consequence?", options: ["Security may be compromised", "No consequences because inactive", "Cannot encrypt/decrypt with public key", "Cannot encrypt/decrypt with private key", "Expiration date extended"], answer: 0 },
+            { q: "What are valid methods of establishing if certificate revoked? (Select two)", options: ["Using the OCSP", "Checking expiration date", "Configure certificate revocation repository", "Harvesting revoked certificates and pushing to browser"], answer: 0 },
+            { q: "Browser indicates network error while accessing site. What may have caused this?", options: ["Certificate for site has been revoked", "OCSP unable to access server", "Certificate on OCSP responder is revoked", "Web server is offline"], answer: 1 },
+            { q: "What is true regarding certificate chaining? (Select two)", options: ["Root CAs validate all certificates", "Root certificates are self-signed", "Endpoint of chain is user certificate", "Not more than one intermediate CA allowed"], answer: 1 },
+            { q: "Maintaining root CA and intermediate CAs. What ensures root CA security?", options: ["Allow local access from isolated network", "Require two-factor authentication", "Keep powered down until needed", "Encrypt all traffic and disable wireless"], answer: 2 },
+            { q: "Web server establishing secure connection creates session keys. What is true about session keys?", options: ["Created after HelloServer message", "Created after ClientHello message", "Asymmetric keys for browser-server traffic", "Symmetric keys for browser-server traffic"], answer: 3 },
+            { q: "Need one certificate for www.mysite.com, .org, and .info. What type of certificate?", options: ["EV", "SAN", "Multisite", "Wildcard"], answer: 1 },
+            { q: "What are valid entities for which digital certificates can be used? (Select all)", options: ["Email", "Printer", "Software", "PDF file", "Word document"], answer: 0 },
+            { q: "What attributes must X.509 digital certificate include? (Select three)", options: ["Revocation status field", "Encryption keys", "www.mysite.com", "*.mysite.com", "IP address of end device", "URL"], answer: 1 },
+            { q: "PKI is underlying infrastructure for controlling what entities? (Select two)", options: ["Public keys", "Key storage", "Certificate policy", "Digital certificates", "Bridge trust model"], answer: 0 },
+            { q: "Three entities know and trust each other completely. What describes this PKI trust? (Select two)", options: ["Direct trust", "Bridge trust", "Third-party trust", "Distributed trust", "Web of trust"], answer: 0 },
+            { q: "Producing CP and CPS documents. What defines these documents? (Select three)", options: ["CPS is more technical than CP", "CP is set of rules governing PKI operation", "CPS can be referenced in OID", "CP describes how CA uses certificates", "CP includes how end-users register", "CPS provides baseline security requirements"], answer: 0 },
+            { q: "Employee on extended leave. What action regarding their digital certificate? (Select two)", options: ["Annul it", "Delete it", "Expire it", "Revoke it", "Suspend it", "Decommission it"], answer: 3 },
+            { q: "Key storage policy includes hardware and software. What issues to consider? (Select two)", options: ["Store keys in password protected folders", "Store keys in encrypted folders", "Back up expired keys offline", "Treat unrevoked keys same as active", "Encrypted keys can be shared in plaintext"], answer: 0 },
+            { q: "User retrieves two halves of key from different parties and combines them. What process?", options: ["Key bonding", "Key escrow", "Key activation", "M-of-N control"], answer: 1 },
+            { q: "Revoked key is reactivated to decrypt old messages. What is this called?", options: ["Key reinstatement", "Revoked key cannot be reinstated", "Key recovery", "Key reestablishment"], answer: 1 },
+            { q: "Scheme encapsulates encrypted information with unencrypted information. What is potential consequence?", options: ["Okay only if not through public network", "Cannot transmit encrypted and unencrypted simultaneously", "Security will be compromised", "Data transmitted securely"], answer: 3 },
+            { q: "What improvements made to current TLS version? (Select two)", options: ["Removes MD5, replaces with SHA-224", "Encrypts handshake messages after ServerHello", "Provides SSL backward compatibility", "Uses Perfect Forward Secrecy for key exchange"], answer: 1 },
+            { q: "IPSec is transparent protocol. What does this mean? (Select two)", options: ["Natively part of IPv4 and IPv6", "Advertises existence to deter attackers", "Programs don't need modification", "Users don't need security training", "Easily configured on any hardware"], answer: 2 },
+            { q: "Manager wants TLS for easier configuration. What justifies IPSec vs TLS? (Select two)", options: ["IPSec authenticates packets from source", "TLS uses ESP to ensure privacy", "IPSec manages keys securely", "TLS uses ISAKMP/Oakley for keys", "IPSec supports tunnel mode, TLS transport"], answer: 0 },
+            { q: "What characteristics determine key strength? (Select three)", options: ["Lifecycle", "Duration", "Key space", "Randomness", "Cryptoperiod", "Impermanence"], answer: 2 },
+            { q: "What is true regarding indicated block cipher mode? (Select two)", options: ["CBC uses output as input for next round", "CTR requires synchronized control engine", "ECB is among most effective modes", "GCM computes MAC to ensure no tampering"], answer: 0 }
+        ];
+
+        /* ========================================
+           QUIZ STATE MANAGEMENT
+           ======================================== */
+        let quizState = {
+            active: false,
+            currentQuestion: 0,
+            score: 0,
+            totalQuestions: 10,
+            selectedQuestions: [],
+            answered: false,
+            selectedAnswer: null
+        };
+
+        /* ========================================
+           QUESTION TRACKING SYSTEM
+           Tracks all questions attempted and their repetition
+           ======================================== */
+        let questionHistory = {
+            attempted: new Set(), // Track question indices that have been attempted
+            results: [], // Store results for each attempt: { questionIndex, correct, timestamp }
+            masteredQuestions: new Set(), // Questions answered correctly 3+ times consecutively
+            recentlyMissed: new Set(), // Questions missed in recent attempts
+            getAttemptCount: function(questionIndex) {
+                return this.results.filter(r => r.questionIndex === questionIndex).length;
+            },
+            getCorrectCount: function(questionIndex) {
+                return this.results.filter(r => r.questionIndex === questionIndex && r.correct).length;
+            },
+            getConsecutiveCorrect: function(questionIndex) {
+                // Get attempts for this question, most recent first
+                const attempts = this.results
+                    .filter(r => r.questionIndex === questionIndex)
+                    .reverse();
+                
+                let consecutive = 0;
+                for (const attempt of attempts) {
+                    if (attempt.correct) {
+                        consecutive++;
+                    } else {
+                        break;
+                    }
+                }
+                return consecutive;
+            },
+            isMastered: function(questionIndex) {
+                return this.masteredQuestions.has(questionIndex);
+            },
+            getTotalAttempts: function() {
+                return this.results.length;
+            },
+            getUniqueQuestionsAttempted: function() {
+                return this.attempted.size;
+            },
+            getMostMissed: function(limit = 5) {
+                const questionStats = {};
+                this.results.forEach(r => {
+                    if (!questionStats[r.questionIndex]) {
+                        questionStats[r.questionIndex] = { total: 0, correct: 0 };
+                    }
+                    questionStats[r.questionIndex].total++;
+                    if (r.correct) questionStats[r.questionIndex].correct++;
+                });
+                
+                return Object.entries(questionStats)
+                    .filter(([idx]) => !this.isMastered(parseInt(idx))) // Exclude mastered questions
+                    .map(([idx, stats]) => ({
+                        questionIndex: parseInt(idx),
+                        attempts: stats.total,
+                        correct: stats.correct,
+                        incorrect: stats.total - stats.correct,
+                        accuracy: Math.round((stats.correct / stats.total) * 100)
+                    }))
+                    .sort((a, b) => b.incorrect - a.incorrect)
+                    .slice(0, limit);
+            },
+            recordAttempt: function(questionIndex, correct) {
+                this.attempted.add(questionIndex);
+                this.results.push({
+                    questionIndex: questionIndex,
+                    correct: correct,
+                    timestamp: new Date().toISOString()
+                });
+                
+                // Check if question should be marked as mastered
+                if (correct && this.getConsecutiveCorrect(questionIndex) >= 3) {
+                    this.masteredQuestions.add(questionIndex);
+                    this.recentlyMissed.delete(questionIndex); // Remove from missed if it was there
+                } else if (!correct) {
+                    // Add to recently missed for inclusion in next quiz
+                    this.recentlyMissed.add(questionIndex);
+                }
+                
+                this.saveToStorage();
+            },
+            getAvailableQuestions: function() {
+                // Return all questions that are not mastered
+                return quizQuestions
+                    .map((q, idx) => idx)
+                    .filter(idx => !this.isMastered(idx));
+            },
+            getMissedQuestions: function() {
+                return Array.from(this.recentlyMissed);
+            },
+            clearRecentlyMissed: function() {
+                this.recentlyMissed.clear();
+                this.saveToStorage();
+            },
+            saveToStorage: function() {
+                try {
+                    localStorage.setItem('securityPrepBotHistory', JSON.stringify({
+                        attempted: Array.from(this.attempted),
+                        results: this.results,
+                        masteredQuestions: Array.from(this.masteredQuestions),
+                        recentlyMissed: Array.from(this.recentlyMissed)
+                    }));
+                } catch (e) {
+                    console.log('Storage not available');
+                }
+            },
+            loadFromStorage: function() {
+                try {
+                    const saved = localStorage.getItem('securityPrepBotHistory');
+                    if (saved) {
+                        const data = JSON.parse(saved);
+                        this.attempted = new Set(data.attempted || []);
+                        this.results = data.results || [];
+                        this.masteredQuestions = new Set(data.masteredQuestions || []);
+                        this.recentlyMissed = new Set(data.recentlyMissed || []);
+                    }
+                } catch (e) {
+                    console.log('Could not load history');
+                }
+            },
+            clearHistory: function() {
+                this.attempted.clear();
+                this.results = [];
+                this.masteredQuestions.clear();
+                this.recentlyMissed.clear();
+                try {
+                    localStorage.removeItem('securityPrepBotHistory');
+                } catch (e) {
+                    console.log('Storage not available');
+                }
+            }
+        };
+
+        // Load history on page load
+        questionHistory.loadFromStorage();
+
+        /* ========================================
+           CORE APPLICATION FUNCTIONS
+           ======================================== */
+        
+        const chatArea = document.getElementById('chatArea');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        // Allow Enter key to send messages
+        userInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        /**
+         * Main function to handle sending user messages
+         */
+        function sendMessage() {
+            const message = userInput.value.trim();
+            
+            if (message === '') return;
+
+            // Display user message
+            addMessage(message, 'user');
+            
+            // Clear input and disable button
+            userInput.value = '';
+            sendBtn.disabled = true;
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            // Simulate processing delay (realistic response time per NFR-4.1)
+            setTimeout(() => {
+                const response = generateResponse(message);
+                hideTypingIndicator();
+                addMessage(response, 'bot');
+                sendBtn.disabled = false;
+                userInput.focus();
+            }, 1500);
+        }
+
+        /**
+         * Adds a message to the chat area
+         */
+        function addMessage(content, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            
+            if (type === 'bot' && typeof content === 'object') {
+                // Bot response with structured content
+                contentDiv.innerHTML = content.html;
+            } else {
+                // User message or simple text
+                contentDiv.textContent = content;
+            }
+            
+            messageDiv.appendChild(contentDiv);
+            chatArea.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        /**
+         * Shows typing indicator while processing
+         */
+        function showTypingIndicator() {
+            const indicator = document.createElement('div');
+            indicator.className = 'message bot';
+            indicator.id = 'typingIndicator';
+            indicator.innerHTML = `
+                <div class="typing-indicator active">
+                    <span></span><span></span><span></span>
+                </div>
+            `;
+            chatArea.appendChild(indicator);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        /**
+         * Hides typing indicator
+         */
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        /**
+         * Generates bot response based on user query (FR-3.1 through FR-3.5)
+         */
+        function generateResponse(query) {
+            const lowerQuery = query.toLowerCase();
+            
+            // Search knowledge base for matching topics
+            for (const [key, data] of Object.entries(securityKnowledge)) {
+                if (lowerQuery.includes(key) || lowerQuery.includes(key.replace('-', ' '))) {
+                    // Found a match - return structured response (FR-3.2, FR-3.3, FR-3.4)
+                    return {
+                        html: `
+                            <div>
+                                <strong>Answer:</strong><br>
+                                ${data.answer}
+                            </div>
+                            <div class="objective-tag">📚 Objective: ${data.objective}</div>
+                            <div class="practice-items">
+                                <strong>Recommended Practice:</strong>
+                                <ul>
+                                    ${data.practices.map(p => `<li>${p}</li>`).join('')}
+                                </ul>
+                            </div>
+                        `
+                    };
+                }
+            }
+            
+            // No match found - handle out of scope query (FR-3.5)
+            return {
+                html: `
+                    <div>
+                        <strong>Topic Not Found</strong><br>
+                        I couldn't find specific information about "${query}" in the Security+ curriculum. Please try rephrasing your question or ask about topics like: encryption, firewalls, phishing, malware, access control, incident response, PKI, vulnerabilities, or MFA.
+                    </div>
+                `
+            };
+        }
+
+        // Focus input on load
+        window.onload = function() {
+            userInput.focus();
+        };
+
+        /* ========================================
+           QUIZ FUNCTIONS
+           ======================================== */
+
+        /**
+         * Start a new quiz session
+         */
+        function startQuiz() {
+            try {
+                // Check if there are available questions
+                const availableQuestions = questionHistory.getAvailableQuestions();
+                
+                if (availableQuestions.length === 0) {
+                    // All questions mastered!
+                    chatArea.innerHTML = `
+                        <div class="message bot">
+                            <div class="message-content">
+                                <strong>🎉 Congratulations!</strong><br>
+                                You've mastered all 100 Security+ questions! You've answered every question correctly 3 times in a row.<br><br>
+                                You can clear your history to start over, or continue using the chatbot to review concepts.
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Reset quiz state
+                quizState = {
+                    active: true,
+                    currentQuestion: 0,
+                    score: 0,
+                    totalQuestions: Math.min(10, availableQuestions.length), // Adjust if fewer than 10 available
+                    selectedQuestions: getRandomQuestions(10),
+                    answered: false,
+                    selectedAnswer: null
+                };
+
+                // Clear chat and show first question
+                chatArea.innerHTML = '';
+                displayQuestion();
+
+                // Disable chat input
+                userInput.disabled = true;
+                sendBtn.disabled = true;
+            } catch (error) {
+                console.error('Error starting quiz:', error);
+                chatArea.innerHTML = `
+                    <div class="message bot">
+                        <div class="message-content">
+                            <strong>⚠️ Error Starting Quiz</strong><br>
+                            There was a problem starting the quiz. Please try refreshing the page. If the problem persists, try clearing your browser history.
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        /**
+         * Get random questions from the pool
+         */
+        function getRandomQuestions(count) {
+            let selectedIndices = [];
+            
+            // First, add all recently missed questions (priority)
+            const missedQuestions = questionHistory.getMissedQuestions();
+            selectedIndices.push(...missedQuestions);
+            
+            // Get available questions (not mastered)
+            const availableQuestions = questionHistory.getAvailableQuestions();
+            
+            // If we need more questions, randomly select from available pool
+            if (selectedIndices.length < count && availableQuestions.length > 0) {
+                const remainingNeeded = count - selectedIndices.length;
+                
+                // Filter out already selected questions
+                const poolToChooseFrom = availableQuestions.filter(idx => !selectedIndices.includes(idx));
+                
+                // Shuffle and take what we need
+                const shuffled = poolToChooseFrom.sort(() => Math.random() - 0.5);
+                selectedIndices.push(...shuffled.slice(0, remainingNeeded));
+            }
+            
+            // If still not enough (all questions mastered?), use any questions
+            if (selectedIndices.length < count) {
+                const remainingNeeded = count - selectedIndices.length;
+                const allIndices = quizQuestions.map((q, idx) => idx);
+                const poolToChooseFrom = allIndices.filter(idx => !selectedIndices.includes(idx));
+                const shuffled = poolToChooseFrom.sort(() => Math.random() - 0.5);
+                selectedIndices.push(...shuffled.slice(0, remainingNeeded));
+            }
+            
+            // Clear recently missed after including them in this quiz
+            questionHistory.clearRecentlyMissed();
+            
+            // Shuffle the final selection and return the actual question objects
+            return selectedIndices
+                .sort(() => Math.random() - 0.5)
+                .map(idx => quizQuestions[idx]);
+        }
+
+        /**
+         * Display current question
+         */
+        function displayQuestion() {
+            const question = quizState.selectedQuestions[quizState.currentQuestion];
+            const questionIndex = quizQuestions.indexOf(question);
+            const attemptCount = questionHistory.getAttemptCount(questionIndex);
+            const consecutiveCorrect = questionHistory.getConsecutiveCorrect(questionIndex);
+            const isMastered = questionHistory.isMastered(questionIndex);
+            const isRepeated = attemptCount > 0;
+            
+            let statusBadge = '';
+            if (isMastered) {
+                statusBadge = '<span class="question-indicator mastered">✓ Mastered</span>';
+            } else if (isRepeated) {
+                statusBadge = `<span class="question-indicator repeated">Attempted ${attemptCount}x (${consecutiveCorrect} correct in a row)</span>`;
+            } else {
+                statusBadge = '<span class="question-indicator">New</span>';
+            }
+            
+            const quizHTML = `
+                <div class="quiz-container">
+                    <div class="quiz-header">
+                        <div class="quiz-score">Score: ${quizState.score}/${quizState.currentQuestion}</div>
+                        <div class="quiz-progress">
+                            Question ${quizState.currentQuestion + 1} of ${quizState.totalQuestions}
+                            ${statusBadge}
+                        </div>
+                    </div>
+                    <div class="quiz-question">
+                        ${quizState.currentQuestion + 1}. ${question.q}
+                    </div>
+                    <div class="quiz-options" id="quizOptions">
+                        ${question.options.map((opt, idx) => `
+                            <button class="quiz-option" onclick="selectAnswer(${idx})" data-index="${idx}">
+                                ${String.fromCharCode(65 + idx)}. ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div id="quizFeedback"></div>
+                    <div class="quiz-buttons">
+                        <button class="quiz-btn quiz-btn-primary" id="submitAnswer" onclick="submitAnswer()" disabled>
+                            Submit Answer
+                        </button>
+                        <button class="quiz-btn quiz-btn-secondary" onclick="endQuiz()">
+                            End Quiz
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            chatArea.innerHTML = quizHTML;
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        /**
+         * Handle answer selection
+         */
+        function selectAnswer(index) {
+            if (quizState.answered) return;
+
+            // Remove previous selection
+            document.querySelectorAll('.quiz-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+
+            // Mark new selection
+            const selectedOption = document.querySelector(`[data-index="${index}"]`);
+            selectedOption.classList.add('selected');
+            
+            quizState.selectedAnswer = index;
+            document.getElementById('submitAnswer').disabled = false;
+        }
+
+        /**
+         * Submit and check answer
+         */
+        function submitAnswer() {
+            if (quizState.answered || quizState.selectedAnswer === null) return;
+
+            quizState.answered = true;
+            const question = quizState.selectedQuestions[quizState.currentQuestion];
+            const questionIndex = quizQuestions.indexOf(question);
+            const correct = quizState.selectedAnswer === question.answer;
+
+            if (correct) {
+                quizState.score++;
+            }
+
+            // Record this attempt in history
+            questionHistory.recordAttempt(questionIndex, correct);
+
+            // Show visual feedback
+            document.querySelectorAll('.quiz-option').forEach((opt, idx) => {
+                opt.classList.add('disabled');
+                if (idx === question.answer) {
+                    opt.classList.add('correct');
+                } else if (idx === quizState.selectedAnswer && !correct) {
+                    opt.classList.add('incorrect');
+                }
+            });
+
+            // Show feedback message
+            const feedbackDiv = document.getElementById('quizFeedback');
+            const consecutiveCorrect = questionHistory.getConsecutiveCorrect(questionIndex);
+            let feedbackMessage = correct 
+                ? '✓ Correct! Well done.' 
+                : `✗ Incorrect. The correct answer is: ${String.fromCharCode(65 + question.answer)}. ${question.options[question.answer]}`;
+            
+            // Add mastery notification
+            if (correct && consecutiveCorrect === 3) {
+                feedbackMessage += '<br><br>🎉 <strong>Question Mastered!</strong> You\'ve answered this correctly 3 times in a row. It will no longer appear in future quizzes.';
+            } else if (correct && consecutiveCorrect > 0) {
+                feedbackMessage += `<br><br>🔥 ${consecutiveCorrect}/3 consecutive correct! ${3 - consecutiveCorrect} more to master this question.`;
+            }
+            
+            feedbackDiv.className = `quiz-feedback ${correct ? 'correct' : 'incorrect'}`;
+            feedbackDiv.innerHTML = feedbackMessage;
+
+            // Update button
+            const submitBtn = document.getElementById('submitAnswer');
+            submitBtn.textContent = quizState.currentQuestion < quizState.totalQuestions - 1 ? 'Next Question' : 'View Results';
+            submitBtn.onclick = nextQuestion;
+            submitBtn.disabled = false;
+        }
+
+        /**
+         * Move to next question or show results
+         */
+        function nextQuestion() {
+            quizState.currentQuestion++;
+            quizState.answered = false;
+            quizState.selectedAnswer = null;
+
+            if (quizState.currentQuestion < quizState.totalQuestions) {
+                displayQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        /**
+         * Show final quiz results
+         */
+        function showResults() {
+            const percentage = Math.round((quizState.score / quizState.totalQuestions) * 100);
+            let message = '';
+            
+            if (percentage >= 90) {
+                message = '🌟 Outstanding! You\'re ready for the exam!';
+            } else if (percentage >= 70) {
+                message = '👍 Good job! Keep studying to improve.';
+            } else if (percentage >= 50) {
+                message = '📚 Keep practicing. Review the topics you missed.';
+            } else {
+                message = '💪 More study needed. Don\'t give up!';
+            }
+
+            const resultsHTML = `
+                <div class="quiz-container">
+                    <div class="quiz-results">
+                        <h2>Quiz Complete!</h2>
+                        <div class="score-display">${quizState.score}/${quizState.totalQuestions}</div>
+                        <div class="percentage">${percentage}%</div>
+                        <p>${message}</p>
+                        <div class="quiz-buttons" style="justify-content: center;">
+                            <button class="quiz-btn quiz-btn-primary" onclick="startQuiz()">
+                                Take Another Quiz
+                            </button>
+                            <button class="quiz-btn quiz-btn-secondary" onclick="endQuiz()">
+                                Back to Chat
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            chatArea.innerHTML = resultsHTML;
+            quizState.active = false;
+        }
+
+        /**
+         * End quiz and return to chat mode
+         */
+        function endQuiz() {
+            quizState.active = false;
+            chatArea.innerHTML = `
+                <div class="message bot">
+                    <div class="message-content">
+                        <strong>Welcome back!</strong><br>
+                        ${quizState.currentQuestion > 0 ? `You answered ${quizState.score} out of ${quizState.currentQuestion} questions correctly before ending the quiz.<br><br>` : ''}
+                        Ready to continue studying? Ask me any Security+ questions or click "Test Me" to try another quiz!
+                    </div>
+                </div>
+            `;
+            userInput.disabled = false;
+            sendBtn.disabled = false;
+            userInput.focus();
+        }
+
+        /**
+         * Show statistics page
+         */
+        function showStats() {
+            try {
+                const totalAttempts = questionHistory.getTotalAttempts();
+                const uniqueQuestions = questionHistory.getUniqueQuestionsAttempted();
+                const totalQuestions = quizQuestions.length;
+                const coverage = Math.round((uniqueQuestions / totalQuestions) * 100);
+                const masteredCount = questionHistory.masteredQuestions.size;
+                const masteredPercentage = Math.round((masteredCount / totalQuestions) * 100);
+                
+                const correctAnswers = questionHistory.results.filter(r => r.correct).length;
+                const overallAccuracy = totalAttempts > 0 ? Math.round((correctAnswers / totalAttempts) * 100) : 0;
+                
+                const mostMissed = questionHistory.getMostMissed(10);
+
+                // Handle case where no data exists yet
+                if (totalAttempts === 0) {
+                    chatArea.innerHTML = `
+                        <div class="stats-container">
+                            <div class="stats-header">
+                                <h2>📊 Your Progress Statistics</h2>
+                                <p>Track your Security+ exam preparation progress</p>
+                            </div>
+                            <div style="text-align: center; padding: 40px;">
+                                <p style="font-size: 18px; color: #666; margin-bottom: 20px;">No quiz data yet!</p>
+                                <p style="color: #999;">Take your first quiz to start tracking your progress.</p>
+                                <div class="quiz-buttons" style="justify-content: center; margin-top: 24px;">
+                                    <button class="quiz-btn quiz-btn-primary" onclick="startQuiz()">
+                                        Take First Quiz
+                                    </button>
+                                    <button class="quiz-btn quiz-btn-secondary" onclick="endQuiz()">
+                                        Back to Chat
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    userInput.disabled = true;
+                    sendBtn.disabled = true;
+                    return;
+                }
+
+                let statsHTML = `
+                    <div class="stats-container">
+                        <div class="stats-header">
+                            <h2>📊 Your Progress Statistics</h2>
+                            <p>Track your Security+ exam preparation progress</p>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value">${totalAttempts}</div>
+                                <div class="stat-label">Total Questions Attempted</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${uniqueQuestions}</div>
+                                <div class="stat-label">Unique Questions Seen</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${coverage}%</div>
+                                <div class="stat-label">Question Pool Coverage</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${overallAccuracy}%</div>
+                                <div class="stat-label">Overall Accuracy</div>
+                            </div>
+                        </div>
+
+                        <div class="mastered-questions">
+                            <h3>✅ Mastered Questions</h3>
+                            <div class="mastered-count">
+                                <div class="mastered-count-value">${masteredCount} / ${totalQuestions}</div>
+                                <div class="mastered-count-label">${masteredPercentage}% of questions mastered (3+ consecutive correct answers)</div>
+                            </div>
+                            ${masteredCount > 0 ? '<p style="color: #155724; font-size: 14px;">🎯 Mastered questions are automatically excluded from future quizzes, allowing you to focus on questions that need more practice!</p>' : '<p style="color: #666; font-size: 14px;">Answer questions correctly 3 times in a row to master them and remove them from future quizzes.</p>'}
+                        </div>
+                `;
+
+                if (mostMissed.length > 0) {
+                    statsHTML += `
+                        <div class="missed-questions">
+                            <h3>🎯 Questions Needing More Practice</h3>
+                            <p style="color: #666; font-size: 14px; margin-bottom: 12px;">These questions will automatically appear in your next quiz:</p>
+                            ${mostMissed.map(stat => {
+                                const question = quizQuestions[stat.questionIndex];
+                                return `
+                                    <div class="missed-item">
+                                        <div class="missed-item-header">
+                                            <div class="missed-question-text">${question.q}</div>
+                                        </div>
+                                        <div class="missed-stats">
+                                            <span class="missed-stat incorrect">❌ ${stat.incorrect} incorrect</span>
+                                            <span class="missed-stat accuracy">📈 ${stat.accuracy}% accuracy</span>
+                                            <span class="missed-stat" style="background: #e3f2fd; color: #1976d2;">🔄 ${stat.attempts} attempts</span>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `;
+                }
+
+                statsHTML += `
+                        <div class="quiz-buttons" style="justify-content: center; margin-top: 24px;">
+                            <button class="quiz-btn quiz-btn-primary" onclick="startQuiz()">
+                                Take Another Quiz
+                            </button>
+                            <button class="quiz-btn quiz-btn-secondary" onclick="endQuiz()">
+                                Back to Chat
+                            </button>
+                            <button class="quiz-btn quiz-btn-secondary" onclick="confirmClearHistory()" style="background: #dc3545;">
+                                Clear History
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                chatArea.innerHTML = statsHTML;
+                chatArea.scrollTop = 0;
+                
+                userInput.disabled = true;
+                sendBtn.disabled = true;
+            } catch (error) {
+                console.error('Error showing stats:', error);
+                chatArea.innerHTML = `
+                    <div class="message bot">
+                        <div class="message-content">
+                            <strong>⚠️ Error Loading Statistics</strong><br>
+                            There was a problem loading your statistics. Please try again.
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        /**
+         * Confirm before clearing history
+         */
+        function confirmClearHistory() {
+            if (confirm('Are you sure you want to clear all your practice history? This cannot be undone.')) {
+                questionHistory.clearHistory();
+                showStats();
+            }
+        }
+    </script>
+</body>
+</html>
